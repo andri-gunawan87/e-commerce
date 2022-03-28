@@ -1,0 +1,55 @@
+﻿@model e_commerce.Datas.Entities.Alamat
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_NewLayout.cshtml";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Alamat</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Kecamatan)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Kecamatan)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Kelurahan)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Kelurahan)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Rt)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Rt)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Rw)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Rw)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.KodePos)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.KodePos)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Detail)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Detail)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
