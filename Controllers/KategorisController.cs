@@ -107,8 +107,15 @@ namespace e_commerce.Controllers
             //}
             //return View(kategori);
             var datainput = await _kategoriService.Get(id);
+            var dataviewModel = new KategoriViewModel
+            {
+                Id = datainput.Id,
+                Nama = datainput.Nama,
+                Deskripsi = datainput.Deskripsi,
+                Icon = datainput.Icon
+            };
             
-            return View(datainput);
+            return View(dataviewModel);
         }
 
         // POST: Kategoris/Edit/5
@@ -116,9 +123,10 @@ namespace e_commerce.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Kategori kategori)
+        public async Task<IActionResult> Edit(KategoriViewModel kategori)
         {
-            var dataKategori = await _kategoriService.Update(kategori);
+            var dataKategori = kategori.ConvertToDbModel();
+            dataKategori = await _kategoriService.Update(dataKategori);
             return RedirectToAction(nameof(Index));
         }
 
