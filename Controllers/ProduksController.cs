@@ -8,46 +8,81 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using e_commerce.Datas;
 using e_commerce.Datas.Entities;
+using e_commerce.Interface;
+using e_commerce.ViewModels;
 
 namespace e_commerce.Controllers
 {
     public class ProduksController : Controller
     {
+        private readonly IProdukService _produkService;
+        private readonly IKategoriService _kategoriService;
         private readonly ecommerceContext _context;
 
-        public ProduksController(ecommerceContext context)
+        public ProduksController(ecommerceContext context, IProdukService produkService, IKategoriService kategoriService)
         {
             _context = context;
+            _produkService = produkService;
+            _kategoriService = kategoriService;
         }
 
         // GET: Produks
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Produks.ToListAsync());
+            var dbResult = await _produkService.GetAll();
+            var viewModel = new List<ProdukViewModel>();
+
+            for (int i = 0; i < dbResult.Count; i++)
+            {
+                viewModel.Add(new ProdukViewModel
+                {
+                    Id = dbResult[i].Id,
+                    Harga = dbResult[i].Harga,
+                    Nama = dbResult[i].Nama,
+                    Deskripsi = dbResult[i].Deskripsi,
+                    Stock = dbResult[i].Stock,
+                    Gambar = dbResult[i].Gambar,
+                });
+            }
+
+            return View(viewModel);
         }
 
         // GET: Produks/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int id)
         {
-            if (id == null)
+            var dataProduk = await _produkService.Get(id);
+            var dataViewModel = new ProdukViewModel
             {
-                return NotFound();
-            }
-
-            var produk = await _context.Produks
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (produk == null)
-            {
-                return NotFound();
-            }
-
-            return View(produk);
+                Id = dataProduk.Id,
+                Harga = dataProduk.Harga,
+                Nama = dataProduk.Nama,
+                Gambar = dataProduk.Gambar,
+                Deskripsi = dataProduk.Deskripsi,
+                Stock = dataProduk.Stock
+            };
+            return View(dataViewModel);
         }
 
-        // GET: Produks/Create
-        public IActionResult Create()
+        private async Task SetKategoriDataSource()
         {
-            return View();
+            var kategoriViewModels = await _kategoriService.GetAll();
+
+            ViewBag.KategoriDataSource = kategoriViewModels.Select(x => new SelectListItem
+            {
+                Value = x.Id.ToString(),
+                Text = x.Nama,
+                Selected = false
+            }).ToList();
+        }
+
+
+
+        // GET: Produks/Create
+        public async Task<IActionResult> Create()
+        {
+            await SetKategoriDataSource();
+            return View(new ProdukViewModel());
         }
 
         // POST: Produks/Create
@@ -55,31 +90,43 @@ namespace e_commerce.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Nama,Deskripsi,Harga,Stock,Gambar")] Produk produk)
+        public async Task<IActionResult> Create(ProdukViewModel dataInput)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.Add(produk);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return View(dataInput);
             }
-            return View(produk);
+            try
+            {
+                var dataproduk = dataInput.ConvertToDbModel();
+                dataproduk.KategoriProduks.Add(new Datas.Entities.KategoriProduk
+                {
+                    IdKategori = dataInput.KategoriId,
+                    IdProduk = dataproduk.Id,
+                });
+
+                await _produkService.Add(dataproduk);
+
+                return Redirect(nameof(Index));
+            }
+            catch (InvalidOperationException ex)
+            {
+                ViewBag.ErrorMessage = ex.Message;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return View(dataInput);
         }
 
         // GET: Produks/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            var datainput = await _produkService.Get(id);
 
-            var produk = await _context.Produks.FindAsync(id);
-            if (produk == null)
-            {
-                return NotFound();
-            }
-            return View(produk);
+            return View(datainput);
         }
 
         // POST: Produks/Edit/5
@@ -87,34 +134,10 @@ namespace e_commerce.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Nama,Deskripsi,Harga,Stock,Gambar")] Produk produk)
+        public async Task<IActionResult> Edit(Produk dataProduk)
         {
-            if (id != produk.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(produk);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ProdukExists(produk.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(produk);
+            var dataKategori = await _produkService.Update(dataProduk);
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Produks/Delete/5
@@ -140,15 +163,8 @@ namespace e_commerce.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var produk = await _context.Produks.FindAsync(id);
-            _context.Produks.Remove(produk);
-            await _context.SaveChangesAsync();
+            await _produkService.Delete(id);
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool ProdukExists(int id)
-        {
-            return _context.Produks.Any(e => e.Id == id);
         }
     }
 }

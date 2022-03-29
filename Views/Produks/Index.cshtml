@@ -1,4 +1,4 @@
-﻿@model IEnumerable<e_commerce.Datas.Entities.Produk>
+﻿@model IEnumerable<e_commerce.ViewModels.ProdukViewModel>
 
 @{
     ViewData["Title"] = "Index";
@@ -28,6 +28,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.Gambar)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.KategoriId)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -48,6 +51,9 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Gambar)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.KategoriId)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

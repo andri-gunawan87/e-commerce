@@ -8,78 +8,107 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using e_commerce.Datas;
 using e_commerce.Datas.Entities;
+using e_commerce.Interface;
+using e_commerce.ViewModels;
 
 namespace e_commerce.Controllers
 {
     public class KategorisController : Controller
     {
+        private readonly IKategoriService _kategoriService;
         private readonly ecommerceContext _context;
 
-        public KategorisController(ecommerceContext context)
+        public KategorisController(ecommerceContext context, IKategoriService kategoriService)
         {
+            _kategoriService = kategoriService;
             _context = context;
         }
 
         // GET: Kategoris
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Kategoris.ToListAsync());
+            var dbResult = await _kategoriService.GetAll();
+
+            var viewModels = new List<KategoriViewModel>();
+
+            for (int i = 0; i < dbResult.Count; i++)
+            {
+                viewModels.Add(new KategoriViewModel
+                {
+                    Id = dbResult[i].Id,
+                    Nama = dbResult[i].Nama,
+                    Deskripsi = dbResult[i].Deskripsi,
+                    Icon = dbResult[i].Icon,
+                });
+            }
+
+            return View(viewModels);
         }
 
         // GET: Kategoris/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int id)
         {
-            if (id == null)
+            var dataKategori = await _kategoriService.Get(id);
+            var dataViewModel = new KategoriViewModel
             {
-                return NotFound();
-            }
-
-            var kategori = await _context.Kategoris
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (kategori == null)
-            {
-                return NotFound();
-            }
-
-            return View(kategori);
+                Id = dataKategori.Id,
+                Nama = dataKategori.Nama,
+                Deskripsi = dataKategori.Deskripsi,
+                Icon = dataKategori.Icon
+            };
+            return View(dataViewModel);
         }
 
         // GET: Kategoris/Create
         public IActionResult Create()
         {
-            return View();
+            return View(new KategoriViewModel());
         }
 
         // POST: Kategoris/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Nama,Deskripsi,Icon")] Kategori kategori)
+        public async Task<IActionResult> Create(KategoriViewModel dataKategori)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.Add(kategori);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return View(dataKategori);
             }
-            return View(kategori);
+            try
+            {
+                await _kategoriService.Add(dataKategori.ConvertToDbModel());
+
+                return Redirect(nameof(Index));
+            }
+            catch (InvalidOperationException ex)
+            {
+                ViewBag.ErrorMessage = ex.Message;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return View(dataKategori);
         }
 
         // GET: Kategoris/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            //if (id == null)
+            //{
+            //    return NotFound();
+            //}
 
-            var kategori = await _context.Kategoris.FindAsync(id);
-            if (kategori == null)
-            {
-                return NotFound();
-            }
-            return View(kategori);
+            //var kategori = await _context.Kategoris.FindAsync(id);
+            //if (kategori == null)
+            //{
+            //    return NotFound();
+            //}
+            //return View(kategori);
+            var datainput = await _kategoriService.Get(id);
+            
+            return View(datainput);
         }
 
         // POST: Kategoris/Edit/5
@@ -87,52 +116,17 @@ namespace e_commerce.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Nama,Deskripsi,Icon")] Kategori kategori)
+        public async Task<IActionResult> Edit(Kategori kategori)
         {
-            if (id != kategori.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(kategori);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!KategoriExists(kategori.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(kategori);
+            var dataKategori = await _kategoriService.Update(kategori);
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Kategoris/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var kategori = await _context.Kategoris
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (kategori == null)
-            {
-                return NotFound();
-            }
-
-            return View(kategori);
+            var dataKategori = await _kategoriService.Get(id);
+            return View(dataKategori);
         }
 
         // POST: Kategoris/Delete/5
@@ -140,15 +134,8 @@ namespace e_commerce.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var kategori = await _context.Kategoris.FindAsync(id);
-            _context.Kategoris.Remove(kategori);
-            await _context.SaveChangesAsync();
+            await _kategoriService.Delete(id);
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool KategoriExists(int id)
-        {
-            return _context.Kategoris.Any(e => e.Id == id);
         }
     }
 }

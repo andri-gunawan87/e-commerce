@@ -1,4 +1,5 @@
-﻿@model e_commerce.Datas.Entities.Produk
+﻿@using Microsoft.AspNetCore.Mvc.Rendering;
+@model e_commerce.ViewModels.ProdukViewModel
 
 @{
     ViewData["Title"] = "Create";
@@ -13,7 +14,7 @@
             <div class="row">
                 <div class="col-lg-12">
                     <h5 class="coupon__link">
-                    Add Product
+                        Add Product
                     </h5>
                     <div class="row">
                         <div class="form-group col-lg-6 col-md-6 col-sm-6">
@@ -46,6 +47,11 @@
                                 <input asp-for="Gambar" class="form-control" />
                                 <span asp-validation-for="Gambar" class="text-danger"></span>
                             </div>
+                            <div class="form-group">
+                                <label asp-for="KategoriId" class="control-label"></label>
+                                @Html.DropDownList("KategoriId", (List<SelectListItem>)ViewBag.KategoriDataSource)
+                                <span asp-validation-for="KategoriId" class="text-danger"></span>
+                            </div>
                             <div class="form-group text-center">
                                 <input type="submit" value="Add Product" class="site-btn" />
                             </div>
@@ -57,7 +63,8 @@
     </div>
 </section>
 <!-- Add Product Section End -->
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+}
 }

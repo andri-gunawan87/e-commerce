@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using e_commerce.ViewModels;
 
 namespace e_commerce.Datas.Entities
 {
@@ -20,5 +21,18 @@ namespace e_commerce.Datas.Entities
 
         public virtual ICollection<KategoriProduk> KategoriProduks { get; set; }
         public virtual ICollection<Keranjang> Keranjangs { get; set; }
+
+        public ProdukViewModel ConvertToViewModel()
+        {
+            return new ProdukViewModel
+            {
+                Id = this.Id,
+                Nama = this.Nama,
+                Deskripsi = this.Deskripsi,
+                Harga = this.Harga,
+                Stock = this.Stock,
+                Gambar = this.Gambar
+            };
+        }
     }
 }

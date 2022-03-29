@@ -145,6 +145,7 @@ namespace e_commerce.Controllers
         }
 
         // Fungsi Delete
+        // Halaman Konfirmasi Delete
         public async Task<IActionResult> DeleteProduct(int? id)
         {
             if (id == null)
