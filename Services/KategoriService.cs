@@ -59,6 +59,9 @@ public class KategoriService : BaseDbService, IKategoriService
             throw new InvalidOperationException($"Produk dengan ID {id} tidak ada");
         }
 
+        // untuk delete dengan id=id
+        DbContext.RemoveRange(DbContext.KategoriProduks.Where(x=>x.IdKategori == id));
+
         DbContext.Remove(dataKategori);
         await DbContext.SaveChangesAsync();
 
@@ -77,7 +80,7 @@ public class KategoriService : BaseDbService, IKategoriService
 
     public async Task<Kategori?> Get(int id)
     {
-        var result = await DbContext.Kategoris.FirstOrDefaultAsync();
+        var result = await DbContext.Kategoris.FirstOrDefaultAsync((x => x.Id == id));
         if (result == null)
         {
             throw new InvalidOperationException($"Produk dengan ID{id} tidak ada");

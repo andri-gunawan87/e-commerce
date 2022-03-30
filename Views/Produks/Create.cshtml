@@ -9,7 +9,7 @@
 <!-- Add Product Section Begin -->
 <section class="checkout spad">
     <div class="container">
-        <form asp-action="Create" class="checkout__form">
+        <form asp-action="Create" class="checkout__form" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="row">
                 <div class="col-lg-12">
@@ -43,15 +43,26 @@
                                 <span asp-validation-for="Deskripsi" class="text-danger"></span>
                             </div>
                             <div class="checkout__form__input">
-                                <p><label asp-for="Gambar" class="control-label"></label></p>
-                                <input asp-for="Gambar" class="form-control" />
-                                <span asp-validation-for="Gambar" class="text-danger"></span>
+                                <p><label asp-for="GambarFile" class="control-label"></label></p>
+                                <input asp-for="GambarFile" type="file" class="form-control" />
+                                <span asp-validation-for="GambarFile" class="text-danger"></span>
                             </div>
                             <div class="form-group">
                                 <label asp-for="KategoriId" class="control-label"></label>
-                                @Html.DropDownList("KategoriId", (List<SelectListItem>)ViewBag.KategoriDataSource)
+                                <select asp-for="KategoriId" asp-items="ViewBag.KategoriDataSource" class="form-control"></select>
                                 <span asp-validation-for="KategoriId" class="text-danger"></span>
                             </div>
+
+                            @*<div class="form-group">
+                                <label asp-for="KategoriId" class="control-label"></label>
+
+                                @Html.DropDownList("KategoriId", (List<SelectListItem>)ViewBag.KategoriDataSource,
+                                "",
+                                new {
+                                multiple = "multiple"
+                                })
+                                <span asp-validation-for="KategoriId" class="text-danger"></span>
+                            </div>*@
                             <div class="form-group text-center">
                                 <input type="submit" value="Add Product" class="site-btn" />
                             </div>

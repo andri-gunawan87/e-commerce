@@ -1,6 +1,7 @@
 ﻿using e_commerce.Interface;
 using e_commerce.Datas;
 using e_commerce.Datas.Entities;
+using e_commerce.ViewModels;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 
@@ -53,7 +54,6 @@ public class ProdukService : BaseDbService, IProdukService
         {
             throw new InvalidOperationException($"Produk with ID{obj.Id} doesnt exist in database");
         }
-
         dataProduk.Id = obj.Id;
         dataProduk.Nama = obj.Nama;
         dataProduk.Deskripsi = obj.Deskripsi;
@@ -69,6 +69,15 @@ public class ProdukService : BaseDbService, IProdukService
 
     public async Task<bool> Delete(int id)
     {
+        //var proudk = _context.Produks.Single(m => m.Id == id);
+        //var a = _context.KategoriProduks.Where(m => m.IdProduk == id);
+        //foreach (var i in a)
+        //{
+        //    _context.KategoriProduks.Remove(i);
+        //}
+        //_context.Remove(proudk);
+        //_context.SaveChanges();
+
         var dataproduk = await DbContext.Produks.FirstOrDefaultAsync(x => x.Id == id);
         var dataKategoriProduk = await DbContext.KategoriProduks.Where(s => s.IdProduk == id).ToListAsync();
         if (dataproduk == null)
@@ -76,11 +85,11 @@ public class ProdukService : BaseDbService, IProdukService
             throw new InvalidOperationException($"Produk dengan ID {id} tidak ada");
         }
 
-        DbContext.Remove(dataproduk);
-        foreach (KategoriProduk item in dataKategoriProduk)
+        foreach (var item in dataKategoriProduk)
         {
             DbContext.Remove(item);
         }
+        DbContext.Remove(dataproduk);
         await DbContext.SaveChangesAsync();
 
         return true;

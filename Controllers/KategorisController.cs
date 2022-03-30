@@ -31,16 +31,21 @@ namespace e_commerce.Controllers
 
             var viewModels = new List<KategoriViewModel>();
 
-            for (int i = 0; i < dbResult.Count; i++)
+            foreach (Kategori item in dbResult)
             {
-                viewModels.Add(new KategoriViewModel
-                {
-                    Id = dbResult[i].Id,
-                    Nama = dbResult[i].Nama,
-                    Deskripsi = dbResult[i].Deskripsi,
-                    Icon = dbResult[i].Icon,
-                });
+                viewModels.Add(new KategoriViewModel(item));
             }
+
+            //for (int i = 0; i < dbResult.Count; i++)
+            //{
+            //    viewModels.Add(new KategoriViewModel
+            //    {
+            //        Id = dbResult[i].Id,
+            //        Nama = dbResult[i].Nama,
+            //        Deskripsi = dbResult[i].Deskripsi,
+            //        Icon = dbResult[i].Icon,
+            //    });
+            //}
 
             return View(viewModels);
         }
@@ -49,13 +54,7 @@ namespace e_commerce.Controllers
         public async Task<IActionResult> Details(int id)
         {
             var dataKategori = await _kategoriService.Get(id);
-            var dataViewModel = new KategoriViewModel
-            {
-                Id = dataKategori.Id,
-                Nama = dataKategori.Nama,
-                Deskripsi = dataKategori.Deskripsi,
-                Icon = dataKategori.Icon
-            };
+            var dataViewModel = new KategoriViewModel(dataKategori);
             return View(dataViewModel);
         }
 
@@ -95,26 +94,10 @@ namespace e_commerce.Controllers
         // GET: Kategoris/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
-            //if (id == null)
-            //{
-            //    return NotFound();
-            //}
-
-            //var kategori = await _context.Kategoris.FindAsync(id);
-            //if (kategori == null)
-            //{
-            //    return NotFound();
-            //}
-            //return View(kategori);
             var datainput = await _kategoriService.Get(id);
-            var dataviewModel = new KategoriViewModel
-            {
-                Id = datainput.Id,
-                Nama = datainput.Nama,
-                Deskripsi = datainput.Deskripsi,
-                Icon = datainput.Icon
-            };
-            
+            // convert ke viewmodel dengan ikuti mas rudi
+            var dataviewModel = new KategoriViewModel(datainput);
+
             return View(dataviewModel);
         }
 
@@ -123,11 +106,27 @@ namespace e_commerce.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(KategoriViewModel kategori)
+        public async Task<IActionResult> Edit(int? id, KategoriViewModel kategori)
         {
-            var dataKategori = kategori.ConvertToDbModel();
-            dataKategori = await _kategoriService.Update(dataKategori);
-            return RedirectToAction(nameof(Index));
+            if (id == null)
+            {
+                return BadRequest();
+            }
+            if (!ModelState.IsValid)
+            {
+                return View(kategori);
+            }
+            try
+            {
+                var dataKategori = kategori.ConvertToDbModel();
+                dataKategori = await _kategoriService.Update(dataKategori);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (InvalidOperationException ex)
+            {
+                ViewBag.ErrorMessage = ex.Message;
+            }
+            return View(kategori);
         }
 
         // GET: Kategoris/Delete/5
