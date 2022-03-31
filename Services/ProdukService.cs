@@ -15,6 +15,7 @@ public class ProdukService : BaseDbService, IProdukService
 
     public async Task<Produk> Add(Produk obj, int idKategori)
     {
+
         if (await DbContext.Produks.AnyAsync(x => x.Id == obj.Id))
         {
             throw new InvalidOperationException($"Produk with ID {obj.Id} is already exist");

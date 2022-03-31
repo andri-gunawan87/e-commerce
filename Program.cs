@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using e_commerce.Datas;
 using e_commerce.Interface;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using e_commerce.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,15 +18,25 @@ builder.Services.AddDbContext<ecommerceContext>(
                 .EnableDetailedErrors()
         );
 
+// Add services to the container.
 #region  Business Services Injection
-
 builder.Services.AddScoped<IProdukService, ProdukService>();
 builder.Services.AddScoped<IKategoriService, KategoriService>();
+builder.Services.AddScoped<IProdukKategoriService, ProdukKategoriService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
+builder.Services.AddControllersWithViews();
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(
+        options =>
+        {
+            options.ExpireTimeSpan = TimeSpan.FromDays(30);
+            options.SlidingExpiration = true;
+            options.AccessDeniedPath = "/Home/Denied";
+            options.LoginPath = "/Account/Login";
+        });
 #endregion
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 

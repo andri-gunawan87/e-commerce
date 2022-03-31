@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using e_commerce.Datas.Entities;
+using e_commerce.ViewModels;
 
 namespace e_commerce.Datas
 {
@@ -471,5 +472,7 @@ namespace e_commerce.Datas
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
+        public DbSet<e_commerce.ViewModels.AccountRegisterViewModel> AccountRegisterViewModel { get; set; }
     }
 }

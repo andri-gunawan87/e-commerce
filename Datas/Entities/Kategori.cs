@@ -8,6 +8,8 @@ namespace e_commerce.Datas.Entities
         public Kategori()
         {
             KategoriProduks = new HashSet<KategoriProduk>();
+            Nama = string.Empty;
+            Deskripsi = string.Empty;
         }
 
         public int Id { get; set; }

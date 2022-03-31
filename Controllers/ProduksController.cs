@@ -18,17 +18,20 @@ namespace e_commerce.Controllers
     {
         private readonly IProdukService _produkService;
         private readonly IKategoriService _kategoriService;
+        private readonly IProdukKategoriService _produkKategoriService;
         private readonly IWebHostEnvironment _iwebHost;
         private readonly ecommerceContext _context;
 
         public ProduksController(ecommerceContext context,
             IProdukService produkService,
             IKategoriService kategoriService,
+            IProdukKategoriService produkKategoriService,
             IWebHostEnvironment iwebHost)
         {
             _context = context;
             _produkService = produkService;
             _kategoriService = kategoriService;
+            _produkKategoriService = produkKategoriService;
             _iwebHost = iwebHost;
         }
 
@@ -85,6 +88,24 @@ namespace e_commerce.Controllers
                 Value = x.Id.ToString(),
                 Text = x.Nama,
                 //Selected = false
+            }).ToList();
+        }
+
+        private async Task SetKategoriDataSource(int[] kategoris)
+        {
+            if(kategoris == null)
+            {
+                await SetKategoriDataSource();
+                return;
+            }
+
+            var kategoriViewModels = await _kategoriService.GetAll();
+
+            ViewBag.KategoriDataSource = kategoriViewModels.Select(x => new SelectListItem
+            {
+                Value = x.Id.ToString(),
+                Text = x.Nama,
+                Selected = kategoris.FirstOrDefault(y => y == x.Id) == 0 ? false : true
             }).ToList();
         }
 
@@ -153,19 +174,26 @@ namespace e_commerce.Controllers
         }
 
         // GET: Produks/Edit/5
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> Edit(int? id)
         {
-            var datainput = await _produkService.Get(id);
-            var dataViewModel = new ProdukViewModel(datainput);
+            if(id == null)
+            {
+                return BadRequest();
+            }
 
-            await SetKategoriDataSource();
+            var produk = await _produkService.Get(id.Value);
 
-            //var kategoriViewModels = await _context.KategoriProduks.Where(x => x.IdProduk == id).ToListAsync();
-            //ViewBag.KategoriDataSource = kategoriViewModels.Select(x => new SelectListItem
-            //{
-            //    Value = x.Id.ToString(),
-            //    Text = x.IdKategori.ToString(),
-            //});
+            if (produk ==  null)
+            {
+                return NotFound();
+            }
+            var kategoriIds = await _produkKategoriService.GetKategoriIds(produk.Id);
+
+            await SetKategoriDataSource(kategoriIds);
+
+
+
+            var dataViewModel = new ProdukViewModel(produk);
 
             return View(dataViewModel);
         }

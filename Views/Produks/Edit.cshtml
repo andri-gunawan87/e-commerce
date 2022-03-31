@@ -44,7 +44,7 @@
                             </div>
                             <div class="checkout__form__input">
                                 <p><label asp-for="Gambar" class="control-label" hidden></label></p>
-                                <input asp-for="Gambar" type="hidden" class="form-control"/>
+                                <input asp-for="Gambar" type="hidden" class="form-control" />
                                 <span asp-validation-for="Gambar" type="hidden" class="text-danger"></span>
                             </div>
                             <div class="checkout__form__input">
@@ -54,7 +54,7 @@
                             </div>
                             <div class="form-group">
                                 <label asp-for="KategoriId" class="control-label"></label>
-                                <select asp-for="KategoriId" asp-items="ViewBag.KategoriDataSource" class="form-control"></select>
+                                <select asp-for="KategoriId" multiple asp-items="ViewBag.KategoriDataSource" class="form-control"></select>
                                 <span asp-validation-for="KategoriId" class="text-danger"></span>
                             </div>
                             <div class="form-group text-center">
