@@ -14,8 +14,8 @@ namespace e_commerce.ViewModels
         public int IdCustomer { get; set; }
         public int JumlahBarang { get; set; }
         public decimal SubTotal { get; set; }
-        public string Gambar { get; set; }
-        public string NamaProduk { get; set; }
+        public string? Gambar { get; set; }
+        public string? NamaProduk { get; set; }
 
         public Keranjang ConvertToDbModel()
         {

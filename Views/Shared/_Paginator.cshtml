@@ -1,0 +1,21 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+    int halamanSekarang = ViewBag.HalamanSekarang ?? 1;
+}
+<div>
+    @Html.ActionLink("Sebelumnya", "Index", "Home", new {
+    page = halamanSekarang == 1 ? 1 : halamanSekarang - 1,
+    pageCount = 4
+    })
+</div>
+
+<div>
+<p>Page : @halamanSekarang</p>
+</div>
+
+<div>
+    @Html.ActionLink("Selanjutnya", "Index", "Home", new {
+    page = Model.Count < 2 ? halamanSekarang : halamanSekarang + 1,
+    pageCount = 4
+    })
+</div>

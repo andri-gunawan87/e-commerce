@@ -69,14 +69,20 @@ namespace e_commerce.Controllers
         // POST: Keranjangs/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(int id)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(int JumlahBarang, int IdProduk)
         {
-            if (id == 0)
+            if (IdProduk == 0)
             {
                 return BadRequest();
             }
+
+            // Cek fungsi ini selalu menghasilkan nilai null atau 0
+            // var IdCustomer = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userEmail = User.FindFirstValue(ClaimTypes.Name).ToString(); ;
+            var userData = _context.Customers.FirstOrDefault(x => x.Email == userEmail);
+            int userId = userData.Id;
 
             //var data = new KeranjangViewModel();
             //data.JumlahBarang = 1;
@@ -85,97 +91,82 @@ namespace e_commerce.Controllers
 
             await _keranjangService.Add(new KeranjangViewModel
             {
-                IdProduk = id,
-                JumlahBarang = 1,
-                IdCustomer = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value.ToInt()
+                IdProduk = IdProduk,
+                JumlahBarang = JumlahBarang,
+                IdCustomer = userId
             });
 
             return RedirectToAction(nameof(Index));
         }
 
-        //// GET: Keranjangs/Edit/5
-        //public async Task<IActionResult> Edit(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
+        // GET: Keranjangs/Edit/5
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-        //    var keranjangViewModel = await _context.KeranjangViewModel.FindAsync(id);
-        //    if (keranjangViewModel == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    return View(keranjangViewModel);
-        //}
+            var keranjangViewModel = await _keranjangService.Get(id.Value);
+            
+            return View(keranjangViewModel);
+        }
 
-        //// POST: Keranjangs/Edit/5
-        //// To protect from overposting attacks, enable the specific properties you want to bind to.
-        //// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Edit(int id, [Bind("Id,IdProduk,IdCustomer,JumlahBarang,SubTotal,Gambar,NamaProduk")] KeranjangViewModel keranjangViewModel)
-        //{
-        //    if (id != keranjangViewModel.Id)
-        //    {
-        //        return NotFound();
-        //    }
+        // POST: Keranjangs/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, KeranjangViewModel keranjangViewModel)
+        {
+            if (id != keranjangViewModel.Id)
+            {
+                return NotFound();
+            }
 
-        //    if (ModelState.IsValid)
-        //    {
-        //        try
-        //        {
-        //            _context.Update(keranjangViewModel);
-        //            await _context.SaveChangesAsync();
-        //        }
-        //        catch (DbUpdateConcurrencyException)
-        //        {
-        //            if (!KeranjangViewModelExists(keranjangViewModel.Id))
-        //            {
-        //                return NotFound();
-        //            }
-        //            else
-        //            {
-        //                throw;
-        //            }
-        //        }
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    return View(keranjangViewModel);
-        //}
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var dataInput = await _keranjangService.Update(keranjangViewModel);
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!KeranjangViewModelExists(keranjangViewModel.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            return View(keranjangViewModel);
+        }
 
-        //// GET: Keranjangs/Delete/5
-        //public async Task<IActionResult> Delete(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
+        // GET: Keranjangs/Delete/5
+        public async Task<IActionResult> Delete(int? id)
+        {
+            var dataInput = _context.Keranjangs.FirstOrDefault(x => x.Id == id);
+            var dataViewModel = new KeranjangViewModel(dataInput);
 
-        //    var keranjangViewModel = await _context.KeranjangViewModel
-        //        .FirstOrDefaultAsync(m => m.Id == id);
-        //    if (keranjangViewModel == null)
-        //    {
-        //        return NotFound();
-        //    }
+            return View(dataViewModel);
+        }
 
-        //    return View(keranjangViewModel);
-        //}
+        // POST: Keranjangs/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var dataViewModel = await _keranjangService.Delete(id);
+            return RedirectToAction(nameof(Index));
+        }
 
-        //// POST: Keranjangs/Delete/5
-        //[HttpPost, ActionName("Delete")]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> DeleteConfirmed(int id)
-        //{
-        //    var keranjangViewModel = await _context.KeranjangViewModel.FindAsync(id);
-        //    _context.KeranjangViewModel.Remove(keranjangViewModel);
-        //    await _context.SaveChangesAsync();
-        //    return RedirectToAction(nameof(Index));
-        //}
-
-        //private bool KeranjangViewModelExists(int id)
-        //{
-        //    return _context.KeranjangViewModel.Any(e => e.Id == id);
-        //}
+        private bool KeranjangViewModelExists(int id)
+        {
+            return _context.KeranjangViewModel.Any(e => e.Id == id);
+        }
     }
 }

@@ -4,6 +4,7 @@ using e_commerce.ViewModels;
 using e_commerce.Interface;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 
 namespace e_commerce.Services
 {
@@ -15,6 +16,8 @@ namespace e_commerce.Services
             _produkService = produkService;
         }
 
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
         public async Task<KeranjangViewModel> Add(KeranjangViewModel obj)
         {
             if (await DbContext.Keranjangs.AnyAsync(x => x.IdProduk == obj.IdProduk && x.IdCustomer == obj.IdCustomer))
@@ -22,7 +25,7 @@ namespace e_commerce.Services
                 return obj;
             }
 
-            var produk = await _produkService.Get(obj.Id);
+            var produk = await _produkService.Get(obj.IdProduk);
 
             if (produk == null)
             {
@@ -43,7 +46,17 @@ namespace e_commerce.Services
 
         public async Task<bool> Delete(int id)
         {
-            throw new NotImplementedException();
+            var keranjang = await DbContext.Keranjangs.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (keranjang == null)
+            {
+                throw new InvalidOperationException("cannot find cart item in database");
+            }
+
+            DbContext.Remove(keranjang);
+            await DbContext.SaveChangesAsync();
+
+            return true;
         }
 
         public Task<List<KeranjangViewModel>> Get(int limit, int offset, string keyword)
@@ -51,9 +64,12 @@ namespace e_commerce.Services
             throw new NotImplementedException();
         }
 
-        public Task<KeranjangViewModel?> Get(int id)
+        public async Task<KeranjangViewModel?> Get(int id)
         {
-            throw new NotImplementedException();
+            var keranjang = await DbContext.Keranjangs.FirstOrDefaultAsync(x => x.Id == id);
+            var dataViewModel = new KeranjangViewModel(keranjang);
+
+            return dataViewModel;
         }
 
         public Task<KeranjangViewModel?> Get(Expression<Func<KeranjangViewModel, bool>> func)
@@ -67,15 +83,44 @@ namespace e_commerce.Services
             var dataKeranjang = new List<KeranjangViewModel>();
             foreach (Keranjang item in result)
             {
-                dataKeranjang.Add( new KeranjangViewModel(item));
+                dataKeranjang.Add(new KeranjangViewModel(item));
             }
 
             return dataKeranjang;
         }
 
-        public Task<KeranjangViewModel> Update(KeranjangViewModel obj)
+        public async Task<KeranjangViewModel> Update(KeranjangViewModel obj)
         {
-            throw new NotImplementedException();
+            var produk = await _produkService.Get(obj.IdProduk);
+            var keranjang = await DbContext.Keranjangs.FirstOrDefaultAsync(x => x.Id == obj.Id);
+
+            if (keranjang == null)
+            {
+                throw new InvalidOperationException("cannot find cart item in database");
+            }
+
+            //get data produk
+
+
+            if (produk == null)
+            {
+                throw new InvalidOperationException("Produk tidak ditemukan");
+            }
+
+            if (obj.JumlahBarang < 1)
+            {
+                obj.JumlahBarang = 1;
+            }
+
+            //rumus subtotal = harga * jumlah produk
+            keranjang.JumlahBarang = obj.JumlahBarang;
+            keranjang.SubTotal = produk.Harga * keranjang.JumlahBarang;
+
+            DbContext.Update(keranjang);
+            await DbContext.SaveChangesAsync();
+            var dataViewModel = new KeranjangViewModel(keranjang);
+
+            return dataViewModel;
         }
 
         public async Task<List<KeranjangViewModel?>> GetKeranjang(int idCustomer)

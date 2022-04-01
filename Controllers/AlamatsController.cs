@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using e_commerce.Datas;
 using e_commerce.Datas.Entities;
+using Microsoft.AspNetCore.Authorization;
 
 namespace e_commerce.Controllers
 {

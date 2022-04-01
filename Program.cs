@@ -33,8 +33,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         {
             options.ExpireTimeSpan = TimeSpan.FromDays(30);
             options.SlidingExpiration = true;
-            options.AccessDeniedPath = "/Home/Denied";
-            options.LoginPath = "/Account/Login";
+            options.AccessDeniedPath = "/Home/Privacy";
+            options.LoginPath = "/Auth/Login";
         });
 #endregion
 
