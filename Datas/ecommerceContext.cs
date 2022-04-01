@@ -474,5 +474,7 @@ namespace e_commerce.Datas
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 
         public DbSet<e_commerce.ViewModels.AccountRegisterViewModel> AccountRegisterViewModel { get; set; }
+
+        public DbSet<e_commerce.ViewModels.KeranjangViewModel> KeranjangViewModel { get; set; }
     }
 }

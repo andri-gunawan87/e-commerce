@@ -123,7 +123,7 @@ public class ProdukService : BaseDbService, IProdukService
 
     public async Task<List<Produk>> GetAll()
     {
-        return await DbContext.Produks.ToListAsync();
+        return await DbContext.Produks.Include(x => x.KategoriProduks).ThenInclude(x => x.IdKategoriNavigation).ToListAsync();
     }
 }
 

@@ -24,6 +24,7 @@ builder.Services.AddScoped<IProdukService, ProdukService>();
 builder.Services.AddScoped<IKategoriService, KategoriService>();
 builder.Services.AddScoped<IProdukKategoriService, ProdukKategoriService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IkeranjangService, KeranjangService>();
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -56,6 +57,7 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+app.UseAuthentication();
 
 app.MapControllerRoute(
     name: "default",

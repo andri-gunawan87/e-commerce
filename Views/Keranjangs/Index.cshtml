@@ -1,11 +1,11 @@
-﻿@model IEnumerable<e_commerce.ViewModels.ProdukViewModel>
+﻿@model IEnumerable<e_commerce.ViewModels.KeranjangViewModel>
 
 @{
     ViewData["Title"] = "Index";
-    Layout = "_NewLayout";
+    Layout = "~/Views/Shared/_NewLayout.cshtml";
 }
 
-<h1>List Produk</h1>
+<h1>Index</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -14,22 +14,22 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Nama)
+                @Html.DisplayNameFor(model => model.IdProduk)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Deskripsi)
+                @Html.DisplayNameFor(model => model.IdCustomer)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Harga)
+                @Html.DisplayNameFor(model => model.JumlahBarang)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Stock)
+                @Html.DisplayNameFor(model => model.SubTotal)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Gambar)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.KategoriId)
+                @Html.DisplayNameFor(model => model.NamaProduk)
             </th>
             <th></th>
         </tr>
@@ -38,25 +38,22 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Nama)
+                @Html.DisplayFor(modelItem => item.IdProduk)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Deskripsi)
+                @Html.DisplayFor(modelItem => item.IdCustomer)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Harga)
+                @Html.DisplayFor(modelItem => item.JumlahBarang)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Stock)
+                @Html.DisplayFor(modelItem => item.SubTotal)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Gambar)
             </td>
             <td>
-                @foreach (var i in item.Kategories)
-                {
-                        <p>@i.Nama</p>
-                    }
+                @Html.DisplayFor(modelItem => item.NamaProduk)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

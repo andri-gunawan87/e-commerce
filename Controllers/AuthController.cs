@@ -23,12 +23,6 @@ namespace e_commerce.Controllers
         {
             var dbResult = await _authService.GetAll();
 
-            var viewModels = new List<AccountRegisterViewModel>();
-
-            foreach (Customer item in dbResult)
-            {
-                viewModels.Add(new AccountRegisterViewModel(item));
-            }
 
             //for (int i = 0; i < dbResult.Count; i++)
             //{
@@ -40,7 +34,7 @@ namespace e_commerce.Controllers
             //        Icon = dbResult[i].Icon,
             //    });
             //}
-            return View(viewModels);
+            return View(dbResult);
         }
 
         public IActionResult Login()
@@ -52,6 +46,15 @@ namespace e_commerce.Controllers
         public async Task<IActionResult> Login(AccountLoginViewModel dataInput)
         {
             var result = await _authService.Login(dataInput.Username, dataInput.Password);
+            string roleUser = string.Empty;
+            if (result.IsAdmin)
+            {
+                roleUser = AppConstant.ADMIN;
+            }
+            else
+            {
+                roleUser = AppConstant.USER;
+            }
 
             if (result == null)
             {
@@ -60,11 +63,12 @@ namespace e_commerce.Controllers
 
             try
             {
+
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, result.Email ?? result.Nama),
                     new Claim("FullName", result.Nama),
-                    new Claim(ClaimTypes.Role, "Administrator")
+                    new Claim(ClaimTypes.Role, roleUser)
                 };
 
                 var claimsIdentity = new ClaimsIdentity(claims, 
@@ -112,7 +116,7 @@ namespace e_commerce.Controllers
             }
             try
             {
-                await _authService.Add(dataLogin.ConvertToDbModel());
+                await _authService.Add(dataLogin);
 
                 return Redirect(nameof(Index));
             }
@@ -131,10 +135,13 @@ namespace e_commerce.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             var datainput = await _authService.Get(id);
-            // convert ke viewmodel dengan ikuti mas rudi
-            var dataviewModel = new AccountRegisterViewModel(datainput);
+            
+            if (datainput == null)
+            {
+                return NotFound();
+            }
 
-            return View(dataviewModel);
+            return View(datainput);
         }
 
         // POST: Kategoris/Edit/5
@@ -154,8 +161,7 @@ namespace e_commerce.Controllers
             }
             try
             {
-                var dataKategori = dataInput.ConvertToDbModel();
-                dataKategori = await _authService.Update(dataKategori);
+                var dataKategori = await _authService.Update(dataInput);
                 return RedirectToAction(nameof(Index));
             }
             catch (InvalidOperationException ex)
@@ -168,8 +174,7 @@ namespace e_commerce.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var dataUser = await _authService.Get(id);
-            var dataViewModel = new AccountRegisterViewModel(dataUser);
-            return View(dataViewModel);
+            return View(dataUser);
         }
 
         // POST: Kategoris/Delete/5

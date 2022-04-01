@@ -93,7 +93,7 @@ namespace e_commerce.Controllers
 
         private async Task SetKategoriDataSource(int[] kategoris)
         {
-            if(kategoris == null)
+            if (kategoris == null)
             {
                 await SetKategoriDataSource();
                 return;
@@ -119,8 +119,6 @@ namespace e_commerce.Controllers
         }
 
         // POST: Produks/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ProdukViewModel dataInput)
@@ -133,7 +131,7 @@ namespace e_commerce.Controllers
             {
                 string fileName = string.Empty;
 
-                if(dataInput.GambarFile != null)
+                if (dataInput.GambarFile != null)
                 {
                     fileName = $"{Guid.NewGuid()}-{dataInput.GambarFile?.FileName}";
                     string filePathName = _iwebHost.WebRootPath + $"/images/{fileName}";
@@ -147,6 +145,7 @@ namespace e_commerce.Controllers
 
                 var dataProduk = dataInput.ConvertToDbModel();
                 dataProduk.Gambar = $"images/{fileName}";
+
                 for (int i = 0; i < dataInput.KategoriId.Length; i++)
                 {
                     dataProduk.KategoriProduks.Add(new Datas.Entities.KategoriProduk
@@ -176,14 +175,14 @@ namespace e_commerce.Controllers
         // GET: Produks/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if(id == null)
+            if (id == null)
             {
                 return BadRequest();
             }
 
             var produk = await _produkService.Get(id.Value);
 
-            if (produk ==  null)
+            if (produk == null)
             {
                 return NotFound();
             }
@@ -225,14 +224,52 @@ namespace e_commerce.Controllers
                 dataProduk.Gambar = dataInput.Gambar;
             }
 
+            // Update Kategori
+            var listKategoriLama = await _produkKategoriService.GetKategoriIds(dataInput.Id);
             for (int i = 0; i < dataInput.KategoriId.Length; i++)
             {
-                dataProduk.KategoriProduks.Add(new Datas.Entities.KategoriProduk
+                if (listKategoriLama != null && listKategoriLama.Any())
                 {
-                    IdKategori = dataInput.KategoriId[i],
-                    IdProduk = dataProduk.Id,
-                });
+                    if (!listKategoriLama.Any(x => x == dataInput.KategoriId[i]))
+                    {
+                        dataProduk.KategoriProduks.Add(new Datas.Entities.KategoriProduk
+                        {
+                            IdKategori = dataInput.KategoriId[i],
+                            IdProduk = dataProduk.Id
+                        });
+                    }
+                }
+                else
+                {
+                    dataProduk.KategoriProduks.Add(new Datas.Entities.KategoriProduk
+                    {
+                        IdKategori = dataInput.KategoriId[i],
+                        IdProduk = dataProduk.Id
+                    });
+                }
             }
+
+            // Remove Kategori yang tidak ada di list
+            if (listKategoriLama != null && (dataProduk.KategoriProduks != null && dataProduk.KategoriProduks.Any()))
+            {
+                foreach (var item in listKategoriLama)
+                {
+                    if (!dataProduk.KategoriProduks.Any(x => x.IdKategori == item))
+                    {
+                        await _produkKategoriService.Remove(dataInput.Id, item);
+                    }
+                }
+            }
+
+
+            //for (int i = 0; i < dataInput.KategoriId.Length; i++)
+            //{
+            //    dataProduk.KategoriProduks.Add(new Datas.Entities.KategoriProduk
+            //    {
+            //        IdKategori = dataInput.KategoriId[i],
+            //        IdProduk = dataProduk.Id,
+            //    });
+            //}
 
             await _produkService.Update(dataProduk);
             return RedirectToAction(nameof(Index));

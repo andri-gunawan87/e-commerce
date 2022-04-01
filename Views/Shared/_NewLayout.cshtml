@@ -1,4 +1,10 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var userRole = Context.User.IsInRole("Admin");
+
+    // ...
+}
+
+<!DOCTYPE html>
 <html lang="zxx">
 
 <head>
@@ -27,9 +33,9 @@
 
 <body>
     <!-- Page Preloder -->
-   @* <div id="preloder">
+    @* <div id="preloder">
         <div class="loader"></div>
-    </div>*@
+        </div>*@
 
     <!-- Offcanvas Menu Begin -->
     <div class="offcanvas-menu-overlay"></div>
@@ -66,37 +72,70 @@
             <div class="row">
                 <div class="col-xl-3 col-lg-2">
                     <div class="header__logo">
+
                         <a text-dark" asp-area="" asp-controller="Home" asp-action="Index"><img src="img/logo.png" alt=""></a>
                     </div>
                 </div>
                 <div class="col-xl-6 col-lg-7">
-                    <nav class="header__menu">
+                    @if (userRole)
+                    {
+                        <nav class="header__menu">
+                            <ul>
+                                <li class="active"><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
+                                <li><a asp-area="" asp-controller="Produks" asp-action="Index">Product</a></li>
+                                <li><a asp-area="" asp-controller="Kategoris" asp-action="Index">Kategori</a></li>
+                                <li><a asp-area="" asp-controller="Customers" asp-action="Index">Users</a></li>
+                                <li>
+                                    <a href="#">Pages</a>
+                                    <ul class="dropdown">
+                                        <li><a asp-area="" asp-controller="Keranjangs" asp-action="Index">Keranjang</a></li>
+                                        <li><a asp-area="" asp-controller="Kategoris" asp-action="Index">Kategori</a></li>
+                                        <li><a asp-area="" asp-controller="Customers" asp-action="Index">Users</a></li>
+                                        <li><a asp-area="" asp-controller="KategoriProduks" asp-action="Index">Kategori-Product</a></li>
+                                        <li><a asp-area="" asp-controller="Alamats" asp-action="Index">Alamat</a></li>
+                                        @*<li><a href="./blog-details.html">Blog Details</a></li>*@
+                                    </ul>
+                                </li>
+                                <li><a asp-area="" asp-controller="KategoriProduks" asp-action="Index">Kategori-Product</a></li>
+                                <li><a asp-area="" asp-controller="Alamats" asp-action="Index">Alamat</a></li>
+                            </ul>
+                        </nav>
+                    }
+                    else
+                    {
+                        <nav class="header__menu">
                         <ul>
                             <li class="active"><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
-                            <li><a href="#">Product</a></li>
-                            <li><a href="#">Men’s</a></li>
+                            <li><a href="#">Produk</a></li>
+                            <li><a asp-area="" asp-controller="Keranjangs" asp-action="Index">Keranjang</a></li>
                             <li><a href="./shop.html">Shop</a></li>
-                            <li>
-                                <a href="#">Pages</a>
+                            <li><a href="#">Pages</a>
                                 <ul class="dropdown">
-                                    <li><a asp-area="" asp-controller="Produks" asp-action="Index">Product</a></li>
-                                    <li><a asp-area="" asp-controller="Kategoris" asp-action="Index">Kategori</a></li>
-                                    <li><a asp-area="" asp-controller="Customers" asp-action="Index">Users</a></li>
-                                    <li><a asp-area="" asp-controller="KategoriProduks" asp-action="Index">Kategori-Product</a></li>
-                                    <li><a asp-area="" asp-controller="Alamats" asp-action="Index">Alamat</a></li>
-                                    @*<li><a href="./blog-details.html">Blog Details</a></li>*@
+                                    <li><a href="./product-details.html">Product Details</a></li>
+                                    <li><a href="./shop-cart.html">Shop Cart</a></li>
+                                    <li><a href="./checkout.html">Checkout</a></li>
+                                    <li><a href="./blog-details.html">Blog Details</a></li>
                                 </ul>
                             </li>
                             <li><a href="./blog.html">Blog</a></li>
                             <li><a href="./contact.html">Contact</a></li>
                         </ul>
                     </nav>
+                    }
                 </div>
                 <div class="col-lg-3">
                     <div class="header__right">
                         <div class="header__right__auth">
-                            <a asp-controller="Auth" asp-action="Login">Login</a>
+                            @if (Context.User.Identity.IsAuthenticated)
+                            {
+                                <a href="#">@Context.User.Identity.Name</a>
+                                <a asp-controller="Auth" asp-action="Logout">LogOut</a>
+                            }
+                            else
+                            {
+                                <a asp-controller="Auth" asp-action="Login">Login</a>
                             <a asp-controller="Auth" asp-action="Register">Register</a>
+                            }
                         </div>
                         <ul class="header__right__widget">
                             <li><span class="icon_search search-switch"></span></li>
@@ -123,7 +162,7 @@
     </header>
 
     <!-- Header Section End -->
-        <div class="container">
+    <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
