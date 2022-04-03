@@ -55,12 +55,12 @@ public class ProdukService : BaseDbService, IProdukService
         {
             throw new InvalidOperationException($"Produk with ID{obj.Id} doesnt exist in database");
         }
-        dataProduk.Id = obj.Id;
         dataProduk.Nama = obj.Nama;
         dataProduk.Deskripsi = obj.Deskripsi;
         dataProduk.Harga = obj.Harga;
         dataProduk.Stock = obj.Stock;
         dataProduk.Gambar = obj.Gambar;
+        dataProduk.KategoriProduks = obj.KategoriProduks;
 
         DbContext.Update(dataProduk);
         await DbContext.SaveChangesAsync();

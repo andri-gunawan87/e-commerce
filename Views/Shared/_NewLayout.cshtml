@@ -1,5 +1,7 @@
-﻿@{
+﻿@using System.Security.Claims;
+@{
     var userRole = Context.User.IsInRole("Admin");
+    //var userId = Context.User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
     // ...
 }
@@ -80,7 +82,7 @@
                     @if (userRole)
                     {
                         <nav class="header__menu">
-                            <ul>
+                            <ul> 
                                 <li class="active"><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
                                 <li><a asp-area="" asp-controller="Produks" asp-action="Index">Product</a></li>
                                 <li><a asp-area="" asp-controller="Kategoris" asp-action="Index">Kategori</a></li>
@@ -128,7 +130,7 @@
                         <div class="header__right__auth">
                             @if (Context.User.Identity.IsAuthenticated)
                             {
-                                <a href="#">@Context.User.Identity.Name</a>
+                                <a asp-controller="Customers" asp-action="Details" asp-route-id="@Context.User.FindFirst(ClaimTypes.NameIdentifier).Value">@Context.User.Identity.Name</a>
                                 <a asp-controller="Auth" asp-action="Logout">LogOut</a>
                             }
                             else

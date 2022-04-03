@@ -250,11 +250,11 @@ namespace e_commerce.Controllers
             }
 
             // Remove Kategori yang tidak ada di list
-            if (listKategoriLama != null && (dataProduk.KategoriProduks != null && dataProduk.KategoriProduks.Any()))
+            if (listKategoriLama != null && (dataInput.KategoriId != null && dataInput.KategoriId.Any()))
             {
                 foreach (var item in listKategoriLama)
                 {
-                    if (!dataProduk.KategoriProduks.Any(x => x.IdKategori == item))
+                    if (!dataInput.KategoriId.Contains(item))
                     {
                         await _produkKategoriService.Remove(dataInput.Id, item);
                     }

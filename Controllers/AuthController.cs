@@ -66,6 +66,7 @@ namespace e_commerce.Controllers
 
                 var claims = new List<Claim>
                 {
+                    new Claim(ClaimTypes.NameIdentifier, result.Id.ToString()),
                     new Claim(ClaimTypes.Name, result.Email ?? result.Nama),
                     new Claim("FullName", result.Nama),
                     new Claim(ClaimTypes.Role, roleUser)

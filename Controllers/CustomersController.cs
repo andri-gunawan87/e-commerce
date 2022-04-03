@@ -42,8 +42,10 @@ namespace e_commerce.Controllers
             {
                 return NotFound();
             }
+            ViewData["IdAlamat"] = new SelectList(_context.Alamats, "Id", "Detail", customer.IdAlamat);
 
             return View(customer);
+            //return View("~/Views/Home/Profile.cshtml");
         }
 
         // GET: Customers/Create
@@ -156,6 +158,29 @@ namespace e_commerce.Controllers
         private bool CustomerExists(int id)
         {
             return _context.Customers.Any(e => e.Id == id);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateAlamat(int id, int idAlamat)
+        {
+            if (id == 0 || idAlamat == 0)
+            {
+                return NotFound();
+            }
+            try
+            {
+                var customer = await _context.Customers.FindAsync(id);
+                customer.IdAlamat = idAlamat;
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Details", new { id = id });
+            }
+            catch
+            {
+                return NotFound();
+            }
+
+            return NotFound();
         }
     }
 }

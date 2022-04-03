@@ -12,6 +12,7 @@ using e_commerce.Interface;
 using e_commerce.Datas.Entities;
 using System.Security.Claims;
 using e_commerce.Helpers;
+using Microsoft.AspNetCore.Authorization;
 
 namespace e_commerce.Controllers
 {
@@ -29,7 +30,12 @@ namespace e_commerce.Controllers
         // GET: Keranjangs
         public async Task<IActionResult> Index()
         {
-            var dbResult = await _keranjangService.GetAll();
+            if (User.Identity.IsAuthenticated)
+            {
+                var dbResult = await _keranjangService.GetKeranjang(GetId());
+                return View(dbResult);
+            }
+            
 
             //var viewModels = new List<Keranjang>();
 
@@ -38,7 +44,7 @@ namespace e_commerce.Controllers
             //    viewModels.Add(new KeranjangViewModel(item));
             //}
 
-            return View(dbResult);
+            return View();
             //return View(await _context.Keranjangs.ToListAsync());
         }
 
@@ -93,7 +99,7 @@ namespace e_commerce.Controllers
             {
                 IdProduk = IdProduk,
                 JumlahBarang = JumlahBarang,
-                IdCustomer = userId
+                IdCustomer = GetId()
             });
 
             return RedirectToAction(nameof(Index));
@@ -144,6 +150,20 @@ namespace e_commerce.Controllers
                 return RedirectToAction(nameof(Index));
             }
             return View(keranjangViewModel);
+        } 
+        
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditJumlah(int IdProduk, int JumlahBarang)
+        {
+            var dataExist = await _context.Keranjangs.FirstOrDefaultAsync(x => x.Id == IdProduk);
+            var dataProduk = await _context.Produks.FirstOrDefaultAsync(x => x.Id == dataExist.IdProduk);
+            dataExist.JumlahBarang = JumlahBarang;
+            dataExist.SubTotal = JumlahBarang * dataProduk.Harga;
+            await _context.SaveChangesAsync();
+
+
+            return Redirect(nameof(Index));
         }
 
         // GET: Keranjangs/Delete/5
@@ -167,6 +187,15 @@ namespace e_commerce.Controllers
         private bool KeranjangViewModelExists(int id)
         {
             return _context.KeranjangViewModel.Any(e => e.Id == id);
+        }
+
+        public int GetId()
+        {
+            var userEmail = User.FindFirstValue(ClaimTypes.Name).ToString(); ;
+            var userData = _context.Customers.FirstOrDefault(x => x.Email == userEmail);
+            int userId = userData.Id;
+
+            return userId;
         }
     }
 }
