@@ -42,7 +42,7 @@ namespace e_commerce.Controllers
             {
                 return NotFound();
             }
-            ViewData["IdAlamat"] = new SelectList(_context.Alamats, "Id", "Detail", customer.IdAlamat);
+            ViewData["IdAlamat"] = new SelectList(_context.Alamats.Where(x => x.IdUser == id), "Id", "Detail", customer.IdAlamat);
 
             return View(customer);
             //return View("~/Views/Home/Profile.cshtml");

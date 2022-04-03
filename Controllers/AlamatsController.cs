@@ -9,6 +9,8 @@ using Microsoft.EntityFrameworkCore;
 using e_commerce.Datas;
 using e_commerce.Datas.Entities;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using e_commerce.Helpers;
 
 namespace e_commerce.Controllers
 {
@@ -60,6 +62,7 @@ namespace e_commerce.Controllers
         {
             if (ModelState.IsValid)
             {
+                alamat.IdUser = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value.ToInt();
                 _context.Add(alamat);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

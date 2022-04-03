@@ -19,6 +19,7 @@ namespace e_commerce.Datas.Entities
         public string Rw { get; set; } = null!;
         public int KodePos { get; set; }
         public string Detail { get; set; } = null!;
+        public int? IdUser { get; set; }
 
         public virtual ICollection<Customer> Customers { get; set; }
         public virtual ICollection<Order> Orders { get; set; }
