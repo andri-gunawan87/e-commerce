@@ -25,6 +25,7 @@ builder.Services.AddScoped<IKategoriService, KategoriService>();
 builder.Services.AddScoped<IProdukKategoriService, ProdukKategoriService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IkeranjangService, KeranjangService>();
+builder.Services.AddScoped<IAlamatService, AlamatService>();
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

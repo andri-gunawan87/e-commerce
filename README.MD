@@ -1,13 +1,7 @@
 E Commerce
 
-Register
-![Alt text](Screenshot/4/Register.png?raw=true "Halaman Index")
+Edit quantity dan delete produk di keranjang
+![Alt text](Screenshot/5/Keranjang.png?raw=true "List Keranjang")
 
-Index
-![Alt text](Screenshot/4/Index.png?raw=true "Halaman Index")
-
-Edit 
-![Alt text](Screenshot/4/Edit.png?raw=true "Halaman Edit")
-
-Delete 
-![Alt text](Screenshot/4/Delete.png?raw=true "Halaman Delete")
+Tambah Alamat
+![Alt text](Screenshot/5/Alamat.png?raw=true "Halaman Profil")

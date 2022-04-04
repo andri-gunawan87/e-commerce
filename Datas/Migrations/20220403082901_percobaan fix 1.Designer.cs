@@ -11,8 +11,8 @@ using e_commerce.Datas;
 namespace e_commerce.Datas.Migrations
 {
     [DbContext(typeof(ecommerceContext))]
-    [Migration("20220403054221_edit kolom alamat pada database")]
-    partial class editkolomalamatpadadatabase
+    [Migration("20220403082901_percobaan fix 1")]
+    partial class percobaanfix1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -473,74 +473,6 @@ namespace e_commerce.Datas.Migrations
                     b.ToTable("status_order", (string)null);
                 });
 
-            modelBuilder.Entity("e_commerce.ViewModels.AccountRegisterViewModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<int?>("IdAlamat")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsAdmin")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<string>("Nama")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("NoHp")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("ProfilPicture")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("AccountRegisterViewModel");
-                });
-
-            modelBuilder.Entity("e_commerce.ViewModels.KeranjangViewModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("Gambar")
-                        .HasColumnType("longtext");
-
-                    b.Property<int>("IdCustomer")
-                        .HasColumnType("int");
-
-                    b.Property<int>("IdProduk")
-                        .HasColumnType("int");
-
-                    b.Property<int>("JumlahBarang")
-                        .HasColumnType("int");
-
-                    b.Property<string>("NamaProduk")
-                        .HasColumnType("longtext");
-
-                    b.Property<decimal>("SubTotal")
-                        .HasColumnType("decimal(65,30)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("KeranjangViewModel");
-                });
 
             modelBuilder.Entity("e_commerce.Datas.Entities.Customer", b =>
                 {

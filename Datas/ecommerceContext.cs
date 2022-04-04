@@ -29,6 +29,7 @@ namespace e_commerce.Datas
         public virtual DbSet<Pengiriman> Pengirimen { get; set; } = null!;
         public virtual DbSet<Produk> Produks { get; set; } = null!;
         public virtual DbSet<StatusOrder> StatusOrders { get; set; } = null!;
+        public virtual DbSet<DetailOrder> DetailOrders { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -38,6 +39,7 @@ namespace e_commerce.Datas
                 optionsBuilder.UseMySql("server=localhost;user=root;password=32147;database=e-commerce", Microsoft.EntityFrameworkCore.ServerVersion.Parse("10.6.7-mariadb"));
             }
         }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -156,6 +158,33 @@ namespace e_commerce.Datas
                     .HasConstraintName("customer_FK");
             });
 
+            modelBuilder.Entity<DetailOrder>(entity => {
+
+                entity.ToTable("detail_order");
+
+                entity.HasIndex(e => e.IdOrder, "detail_order_FK_1");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.IdOrder).HasColumnName("id_order");
+
+                entity.Property(e => e.IdProduk).HasColumnName("id_produk");
+
+                entity.Property(e => e.Harga).HasColumnName("harga")
+                .HasPrecision(10);
+
+                entity.Property(e => e.JumlahBarang).HasColumnName("jml_barang");
+
+                entity.Property(e => e.SubTotal).HasColumnName("subtotal")
+                .HasPrecision(10);
+
+                entity.HasOne(d => d.Order)
+                    .WithMany(p => p.DetailOrder)
+                    .HasForeignKey(d => d.IdOrder)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("detail_order_FK_1");
+            });
+
             modelBuilder.Entity<Kategori>(entity =>
             {
                 entity.ToTable("kategori");
@@ -255,8 +284,6 @@ namespace e_commerce.Datas
             {
                 entity.ToTable("order");
 
-                entity.HasIndex(e => e.IdKeranjang, "order_FK");
-
                 entity.HasIndex(e => e.IdAlamat, "order_alamat");
 
                 entity.HasIndex(e => e.IdCustomer, "order_customer");
@@ -279,10 +306,6 @@ namespace e_commerce.Datas
                     .HasColumnType("int(11)")
                     .HasColumnName("id_customer");
 
-                entity.Property(e => e.IdKeranjang)
-                    .HasColumnType("int(11)")
-                    .HasColumnName("id_keranjang");
-
                 entity.Property(e => e.IdStatus)
                     .HasColumnType("int(11)")
                     .HasColumnName("id_status");
@@ -304,12 +327,6 @@ namespace e_commerce.Datas
                     .HasForeignKey(d => d.IdCustomer)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("order_customer");
-
-                entity.HasOne(d => d.IdKeranjangNavigation)
-                    .WithMany(p => p.Orders)
-                    .HasForeignKey(d => d.IdKeranjang)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("order_keranjang");
 
                 entity.HasOne(d => d.IdStatusNavigation)
                     .WithMany(p => p.Orders)
@@ -473,8 +490,5 @@ namespace e_commerce.Datas
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 
-        public DbSet<e_commerce.ViewModels.AccountRegisterViewModel> AccountRegisterViewModel { get; set; }
-
-        public DbSet<e_commerce.ViewModels.KeranjangViewModel> KeranjangViewModel { get; set; }
     }
 }

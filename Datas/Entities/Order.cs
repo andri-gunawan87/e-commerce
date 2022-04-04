@@ -9,10 +9,10 @@ namespace e_commerce.Datas.Entities
         {
             Pembayarans = new HashSet<Pembayaran>();
             Pengirimen = new HashSet<Pengiriman>();
+            DetailOrder = new HashSet<DetailOrder>();
         }
 
         public int Id { get; set; }
-        public int IdKeranjang { get; set; }
         public DateOnly TanggalTransaksi { get; set; }
         public decimal? JumlahBayar { get; set; }
         public int IdAlamat { get; set; }
@@ -26,5 +26,6 @@ namespace e_commerce.Datas.Entities
         public virtual StatusOrder IdStatusNavigation { get; set; } = null!;
         public virtual ICollection<Pembayaran> Pembayarans { get; set; }
         public virtual ICollection<Pengiriman> Pengirimen { get; set; }
+        public virtual ICollection<DetailOrder> DetailOrder { get; set; }
     }
 }

@@ -186,7 +186,7 @@ namespace e_commerce.Controllers
 
         private bool KeranjangViewModelExists(int id)
         {
-            return _context.KeranjangViewModel.Any(e => e.Id == id);
+            return _context.Keranjangs.Any(e => e.Id == id);
         }
 
         public int GetId()

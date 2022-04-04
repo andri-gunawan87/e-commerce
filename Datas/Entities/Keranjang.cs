@@ -7,7 +7,6 @@ namespace e_commerce.Datas.Entities
     {
         public Keranjang()
         {
-            Orders = new HashSet<Order>();
         }
 
         public int Id { get; set; }

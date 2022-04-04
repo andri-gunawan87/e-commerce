@@ -1,8 +1,4 @@
 ﻿#nullable disable
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -11,22 +7,34 @@ using e_commerce.Datas.Entities;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using e_commerce.Helpers;
+using e_commerce.Interface;
+using e_commerce.ViewModels;
 
 namespace e_commerce.Controllers
 {
     public class AlamatsController : Controller
     {
         private readonly ecommerceContext _context;
+        private readonly IAlamatService _alamatService;
 
-        public AlamatsController(ecommerceContext context)
+        public AlamatsController(ecommerceContext context, IAlamatService alamatService)
         {
             _context = context;
+            _alamatService = alamatService;
         }
 
         // GET: Alamats
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Alamats.ToListAsync());
+            var result = await _alamatService.GetAll();
+            return View(result);
+        }
+
+        public async Task<IActionResult> AlamatUser()
+        {
+            var userId = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value.ToInt();
+            var result = await _alamatService.GetUserAlamat(userId);
+            return View(result);
         }
 
         // GET: Alamats/Details/5
@@ -37,8 +45,7 @@ namespace e_commerce.Controllers
                 return NotFound();
             }
 
-            var alamat = await _context.Alamats
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var alamat = await _alamatService.Get(id.Value);
             if (alamat == null)
             {
                 return NotFound();
@@ -58,16 +65,17 @@ namespace e_commerce.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Kecamatan,Kelurahan,Rt,Rw,KodePos,Detail")] Alamat alamat)
+        public async Task<IActionResult> Create(AlamatViewModel dataInput)
         {
             if (ModelState.IsValid)
             {
-                alamat.IdUser = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value.ToInt();
-                _context.Add(alamat);
-                await _context.SaveChangesAsync();
+                var userId = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value.ToInt();
+                dataInput.IdUser = userId;
+
+                var result = await _alamatService.Add(dataInput);
                 return RedirectToAction(nameof(Index));
             }
-            return View(alamat);
+            return View(dataInput);
         }
 
         // GET: Alamats/Edit/5
@@ -78,7 +86,7 @@ namespace e_commerce.Controllers
                 return NotFound();
             }
 
-            var alamat = await _context.Alamats.FindAsync(id);
+            var alamat = await _alamatService.Get(id.Value);
             if (alamat == null)
             {
                 return NotFound();
@@ -102,6 +110,8 @@ namespace e_commerce.Controllers
             {
                 try
                 {
+                    var userId = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value.ToInt();
+                    alamat.IdUser = userId;
                     _context.Update(alamat);
                     await _context.SaveChangesAsync();
                 }
@@ -129,8 +139,7 @@ namespace e_commerce.Controllers
                 return NotFound();
             }
 
-            var alamat = await _context.Alamats
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var alamat = await _alamatService.Get(id.Value);
             if (alamat == null)
             {
                 return NotFound();
@@ -144,9 +153,7 @@ namespace e_commerce.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var alamat = await _context.Alamats.FindAsync(id);
-            _context.Alamats.Remove(alamat);
-            await _context.SaveChangesAsync();
+            await _alamatService.Delete(id);
             return RedirectToAction(nameof(Index));
         }
 

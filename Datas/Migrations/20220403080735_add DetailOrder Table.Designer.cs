@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using e_commerce.Datas;
 
@@ -10,9 +11,10 @@ using e_commerce.Datas;
 namespace e_commerce.Datas.Migrations
 {
     [DbContext(typeof(ecommerceContext))]
-    partial class ecommerceContextModelSnapshot : ModelSnapshot
+    [Migration("20220403080735_add DetailOrder Table")]
+    partial class addDetailOrderTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -470,6 +472,8 @@ namespace e_commerce.Datas.Migrations
 
                     b.ToTable("status_order", (string)null);
                 });
+
+           
 
             modelBuilder.Entity("e_commerce.Datas.Entities.Customer", b =>
                 {
