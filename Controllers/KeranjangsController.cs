@@ -32,17 +32,14 @@ namespace e_commerce.Controllers
         {
             if (User.Identity.IsAuthenticated)
             {
+                var userId = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value.ToInt();
+                var customer = _context.Customers.FirstOrDefault(x => x.Id == userId);
+                ViewData["IdAlamat"] = new SelectList(_context.Alamats.Where(x => x.IdUser == userId), "Id", "Detail", customer.IdAlamat);
                 var dbResult = await _keranjangService.GetKeranjang(GetId());
                 return View(dbResult);
             }
             
 
-            //var viewModels = new List<Keranjang>();
-
-            //foreach (KeranjangViewModel item in dbResult)
-            //{
-            //    viewModels.Add(new KeranjangViewModel(item));
-            //}
 
             return View();
             //return View(await _context.Keranjangs.ToListAsync());
@@ -89,6 +86,7 @@ namespace e_commerce.Controllers
             var userEmail = User.FindFirstValue(ClaimTypes.Name).ToString(); ;
             var userData = _context.Customers.FirstOrDefault(x => x.Email == userEmail);
             int userId = userData.Id;
+
 
             //var data = new KeranjangViewModel();
             //data.JumlahBarang = 1;

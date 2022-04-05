@@ -1,0 +1,62 @@
+﻿@model IEnumerable<e_commerce.Datas.Entities.Order>
+
+@{
+    ViewData["Title"] = "ListOrder";
+    Layout = "~/Views/Shared/_NewLayout.cshtml";
+}
+
+<h1>ListOrder</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.TanggalTransaksi)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.JumlahBayar)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdAlamat)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdCustomer)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdStatus)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Catatan)
+            </th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <a asp-action="DetailOrder" asp-route-id=@item.Id >@Html.DisplayFor(modelItem => item.TanggalTransaksi)</a>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.JumlahBayar)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdAlamat)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdCustomer)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdStatus)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Catatan)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

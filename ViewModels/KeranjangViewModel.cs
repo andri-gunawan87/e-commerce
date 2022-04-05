@@ -16,6 +16,7 @@ namespace e_commerce.ViewModels
         public decimal SubTotal { get; set; }
         public string? Gambar { get; set; }
         public string? NamaProduk { get; set; }
+        public decimal HargaBarang { get; set; }
 
         public Keranjang ConvertToDbModel()
         {

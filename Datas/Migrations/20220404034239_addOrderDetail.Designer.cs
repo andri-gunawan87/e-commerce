@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using e_commerce.Datas;
 
@@ -10,9 +11,10 @@ using e_commerce.Datas;
 namespace e_commerce.Datas.Migrations
 {
     [DbContext(typeof(ecommerceContext))]
-    partial class ecommerceContextModelSnapshot : ModelSnapshot
+    [Migration("20220404034239_addOrderDetail")]
+    partial class addOrderDetail
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -317,6 +319,9 @@ namespace e_commerce.Datas.Migrations
                         .HasColumnType("int(11)")
                         .HasColumnName("id_customer");
 
+                    b.Property<int>("IdKeranjangNavigationId")
+                        .HasColumnType("int(11)");
+
                     b.Property<int>("IdStatus")
                         .HasColumnType("int(11)")
                         .HasColumnName("id_status");
@@ -326,16 +331,13 @@ namespace e_commerce.Datas.Migrations
                         .HasColumnType("decimal(10)")
                         .HasColumnName("jumlah bayar");
 
-                    b.Property<int?>("KeranjangId")
-                        .HasColumnType("int(11)");
-
-                    b.Property<DateTime>("TanggalTransaksi")
-                        .HasColumnType("datetime(6)")
+                    b.Property<DateOnly>("TanggalTransaksi")
+                        .HasColumnType("date")
                         .HasColumnName("tanggal_transaksi");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("KeranjangId");
+                    b.HasIndex("IdKeranjangNavigationId");
 
                     b.HasIndex(new[] { "IdAlamat" }, "order_alamat");
 
@@ -579,19 +581,23 @@ namespace e_commerce.Datas.Migrations
                         .IsRequired()
                         .HasConstraintName("order_customer");
 
+                    b.HasOne("e_commerce.Datas.Entities.Keranjang", "IdKeranjangNavigation")
+                        .WithMany("Orders")
+                        .HasForeignKey("IdKeranjangNavigationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("e_commerce.Datas.Entities.StatusOrder", "IdStatusNavigation")
                         .WithMany("Orders")
                         .HasForeignKey("IdStatus")
                         .IsRequired()
                         .HasConstraintName("order_status");
 
-                    b.HasOne("e_commerce.Datas.Entities.Keranjang", null)
-                        .WithMany("Orders")
-                        .HasForeignKey("KeranjangId");
-
                     b.Navigation("IdAlamatNavigation");
 
                     b.Navigation("IdCustomerNavigation");
+
+                    b.Navigation("IdKeranjangNavigation");
 
                     b.Navigation("IdStatusNavigation");
                 });

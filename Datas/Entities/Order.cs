@@ -13,7 +13,7 @@ namespace e_commerce.Datas.Entities
         }
 
         public int Id { get; set; }
-        public DateOnly TanggalTransaksi { get; set; }
+        public DateTime TanggalTransaksi { get; set; }
         public decimal? JumlahBayar { get; set; }
         public int IdAlamat { get; set; }
         public int IdCustomer { get; set; }
@@ -22,7 +22,6 @@ namespace e_commerce.Datas.Entities
 
         public virtual Alamat IdAlamatNavigation { get; set; } = null!;
         public virtual Customer IdCustomerNavigation { get; set; } = null!;
-        public virtual Keranjang IdKeranjangNavigation { get; set; } = null!;
         public virtual StatusOrder IdStatusNavigation { get; set; } = null!;
         public virtual ICollection<Pembayaran> Pembayarans { get; set; }
         public virtual ICollection<Pengiriman> Pengirimen { get; set; }

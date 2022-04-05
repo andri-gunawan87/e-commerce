@@ -144,5 +144,10 @@ namespace e_commerce.Services
                                 }).ToListAsync();
             return result;
         }
+        public async Task Clear(int idCustomer)
+        {
+            DbContext.RemoveRange(DbContext.Keranjangs.Where(x => x.IdCustomer == idCustomer));
+            await DbContext.SaveChangesAsync();
+        }
     }
 }

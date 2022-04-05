@@ -5,5 +5,7 @@ namespace e_commerce.Interface
     public interface IkeranjangService : ICrudService<KeranjangViewModel>
     {
         Task<List<KeranjangViewModel>> GetKeranjang(int id);
+
+        Task Clear(int idCustomer);
     }
 }
