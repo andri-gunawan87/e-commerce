@@ -1,7 +1,17 @@
 E Commerce
 
-Edit quantity dan delete produk di keranjang
-![Alt text](Screenshot/5/Keranjang.png?raw=true "List Keranjang")
 
-Tambah Alamat
-![Alt text](Screenshot/5/Alamat.png?raw=true "Halaman Profil")
+![Alt text](Screenshot/6/1.png?raw=true "List Keranjang")
+
+
+![Alt text](Screenshot/6/2.png?raw=true "List Keranjang")
+
+
+![Alt text](Screenshot/6/3.png?raw=true "List Keranjang")
+
+
+![Alt text](Screenshot/6/4.png?raw=true "List Keranjang")
+
+
+![Alt text](Screenshot/6/5.png?raw=true "List Keranjang")
+
