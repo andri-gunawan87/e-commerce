@@ -9,7 +9,7 @@ using System.Security.Claims;
 
 namespace e_commerce.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
         private readonly ILogger<HomeController> _logger;
 

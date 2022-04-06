@@ -6,5 +6,11 @@ namespace e_commerce.Interface
     public interface IOrderService
     {
         Task<Order> CheckOut(Order newOrder);
+        Task<Pembayaran> Dibayar(Pembayaran dataInput);
+        Task<PembayaranViewModel> GetDetailPembayaran(int idOrder);
+        Task<OrderViewModel> GetOrder(int idOrder);
+        Task<OrderViewModel> KonfirmasiOrder(int idOrder);
+        Task<List<OrderViewModel>> GetAllCustomer(int idCustomer);
+        Task<List<OrderViewModel>> GetFilteredAdmin(int limit, int offset, int? status = null, DateTime? date = null);
     }
 }

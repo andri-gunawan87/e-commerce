@@ -13,7 +13,7 @@ using e_commerce.ViewModels;
 
 namespace e_commerce.Controllers
 {
-    public class KategorisController : Controller
+    public class KategorisController : BaseController
     {
         private readonly IKategoriService _kategoriService;
         private readonly ecommerceContext _context;

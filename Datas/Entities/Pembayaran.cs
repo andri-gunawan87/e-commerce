@@ -10,10 +10,11 @@ namespace e_commerce.Datas.Entities
         public decimal TotalBayar { get; set; }
         public int IdOrder { get; set; }
         public int IdCustomer { get; set; }
-        public DateOnly Tanggal { get; set; }
+        public DateTime Tanggal { get; set; }
         public string Tujuan { get; set; } = null!;
         public int? Pajak { get; set; }
         public string? Status { get; set; }
+        public string? BuktiPembayaran { get; set; } = null!;
 
         public virtual Customer IdCustomerNavigation { get; set; } = null!;
         public virtual Order IdOrderNavigation { get; set; } = null!;

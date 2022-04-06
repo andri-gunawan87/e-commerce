@@ -11,7 +11,7 @@ using e_commerce.Datas.Entities;
 
 namespace e_commerce.Controllers
 {
-    public class KategoriProduksController : Controller
+    public class KategoriProduksController : BaseController
     {
         private readonly ecommerceContext _context;
 

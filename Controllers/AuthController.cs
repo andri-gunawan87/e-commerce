@@ -8,7 +8,7 @@ using e_commerce.Datas.Entities;
 
 namespace e_commerce.Controllers
 {
-    public class AuthController : Controller
+    public class AuthController : BaseController
     {
         private readonly ILogger<AuthController> _logger;
         private readonly IAuthService _authService;

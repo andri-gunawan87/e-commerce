@@ -29,4 +29,25 @@
 
         throw new InvalidOperationException("Belum login euy");
     }
+
+    public static Tuple<int, int> ToLimitOffset(int? page, int? pageCount)
+    {
+        int limit = AppConstant.DEFAULT_PAGE_COUNT;
+        if (pageCount != null)
+        {
+            limit = pageCount.Value;
+        }
+
+        int offset = 0;
+        if (page == null)
+        {
+            offset = 0;
+        }
+        else
+        {
+            offset = (page.Value - 1) * limit;
+        }
+
+        return new Tuple<int, int>(limit, offset);
+    }
 }

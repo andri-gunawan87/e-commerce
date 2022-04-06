@@ -125,7 +125,7 @@ namespace e_commerce.Services
 
         public async Task<List<KeranjangViewModel?>> GetKeranjang(int idCustomer)
         {
-            if (idCustomer == null)
+            if (idCustomer == 0)
             {
                 throw new ArgumentNullException("Produk cannot be null");
             }

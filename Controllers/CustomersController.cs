@@ -11,7 +11,7 @@ using e_commerce.Datas.Entities;
 
 namespace e_commerce.Controllers
 {
-    public class CustomersController : Controller
+    public class CustomersController : BaseController
     {
         private readonly ecommerceContext _context;
 

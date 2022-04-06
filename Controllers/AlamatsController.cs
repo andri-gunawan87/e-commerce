@@ -12,7 +12,7 @@ using e_commerce.ViewModels;
 
 namespace e_commerce.Controllers
 {
-    public class AlamatsController : Controller
+    public class AlamatsController : BaseController
     {
         private readonly ecommerceContext _context;
         private readonly IAlamatService _alamatService;
@@ -24,6 +24,7 @@ namespace e_commerce.Controllers
         }
 
         // GET: Alamats
+        [Authorize(Roles = AppConstant.ADMIN)]
         public async Task<IActionResult> Index()
         {
             var result = await _alamatService.GetAll();
@@ -34,7 +35,9 @@ namespace e_commerce.Controllers
         {
             var userId = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value.ToInt();
             var result = await _alamatService.GetUserAlamat(userId);
-            return View(result);
+            var data = _context.Alamats.Where(x => x.IdUser == userId).Include(c => c.IdUser).ToList();
+
+            return View(data);
         }
 
         // GET: Alamats/Details/5

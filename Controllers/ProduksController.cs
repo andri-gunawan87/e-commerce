@@ -11,10 +11,11 @@ using e_commerce.Datas.Entities;
 using e_commerce.Interface;
 using e_commerce.ViewModels;
 using e_commerce.Helpers;
+using Microsoft.AspNetCore.Authorization;
 
 namespace e_commerce.Controllers
 {
-    public class ProduksController : Controller
+    public class ProduksController : BaseController
     {
         private readonly IProdukService _produkService;
         private readonly IKategoriService _kategoriService;
@@ -36,6 +37,7 @@ namespace e_commerce.Controllers
         }
 
         // GET: Produks
+        [Authorize]
         public async Task<IActionResult> Index()
         {
             var dbResult = await _produkService.GetAll();

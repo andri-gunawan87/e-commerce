@@ -16,7 +16,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace e_commerce.Controllers
 {
-    public class KeranjangsController : Controller
+    public class KeranjangsController : BaseController
     {
         private readonly ecommerceContext _context;
         private readonly IkeranjangService _keranjangService;

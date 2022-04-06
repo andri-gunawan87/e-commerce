@@ -4,5 +4,6 @@
     {
         public const string ADMIN = "Admin";
         public const string USER = "Customer";
+        public const int DEFAULT_PAGE_COUNT = 8;
     }
 }
