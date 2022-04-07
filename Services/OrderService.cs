@@ -100,5 +100,26 @@ namespace e_commerce.Services
             var dataViewModel = new OrderViewModel(dataOrder);
             return dataViewModel;
         }
+
+        public async Task<Pengiriman> Dikirim(Pengiriman dataInput)
+        {
+            await DbContext.AddAsync(dataInput);
+            await DbContext.SaveChangesAsync();
+
+            var dataOrder = await DbContext.Orders.FirstOrDefaultAsync(x => x.Id == dataInput.IdOrder);
+            dataOrder.IdStatus = 4;
+            DbContext.Update(dataOrder);
+            DbContext.SaveChanges();
+
+            return dataInput;
+        }
+
+        public async Task Diterima(int idOrder)
+        {
+            var dataOrder = await DbContext.Orders.FirstOrDefaultAsync(x => x.Id == idOrder);
+            dataOrder.IdStatus = 5;
+            DbContext.Update(dataOrder);
+            DbContext.SaveChanges();
+        }
     }
 }

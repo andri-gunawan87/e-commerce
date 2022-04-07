@@ -1,0 +1,109 @@
+﻿@model IEnumerable<e_commerce.Datas.Entities.DetailOrder>
+
+@{
+    ViewData["Title"] = "DetailOrder";
+    Layout = "~/Views/Shared/_NewLayout.cshtml";
+}
+
+<h1>DetailOrder</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.IdProduk)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Harga)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.JumlahBarang)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SubTotal)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Order)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdProduk)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Harga)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.JumlahBarang)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SubTotal)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Order.Id)
+                </td>
+                @if (ViewBag.IsAdmin)
+                {
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                        <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+
+<section class="contact spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 col-md-6">
+                <div class="contact__content">
+                    <div class="contact__address">
+                        <h5>Detail Pembayaran</h5>
+                        <ul>
+                            <li>
+                                <h6>Kurir</h6>
+                                <p>@ViewBag.DataPengiriman.Kurir</p>
+                            </li>
+                            <li>
+                                <h6>Ongkir</h6>
+                                <p>@ViewBag.DataPengiriman.Ongkir</p>
+                            <li>
+                                <h6>IdAlamat</h6>
+                                <p>@ViewBag.DataPengiriman.IdAlamat</p>
+                            </li>
+                            <li>
+                                <h6>NoResi</h6>
+                                <p>@ViewBag.DataPengiriman.NoResi</p>
+                            </li>
+                            <li>
+                                <h6>Keterangan</h6>
+                                <p>@ViewBag.DataPengiriman.Keterangan</p>
+                            </li>
+                            @if (!ViewBag.IsAdmin)
+                            {
+                                <form asp-action="KonfirmasiDiterima">
+                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                    <input name="idOrder" class="form-control" value="@ViewBag.DataPengiriman.IdOrder" hidden></input>
+                                    <div class="form-group">
+                                        <input type="submit" value="Konfirmasi Diterima" class="btn btn-primary" />
+                                    </div>
+                                </form>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,45 +1,97 @@
-﻿@model e_commerce.Datas.Entities.Pengiriman
+﻿@model IEnumerable<e_commerce.Datas.Entities.DetailOrder>
 
 @{
-    ViewData["Title"] = "KonfirmasiPembayaran";
+    ViewData["Title"] = "DetailOrder";
     Layout = "~/Views/Shared/_NewLayout.cshtml";
 }
 
-<h1>Data Pengiriman</h1>
+<h1>Pembayaran Order</h1>
 
-<h4>Pengiriman</h4>
-<hr />
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.IdProduk)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Harga)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.JumlahBarang)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SubTotal)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Order)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdProduk)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Harga)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.JumlahBarang)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SubTotal)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Order.Id)
+                </td>
+                @if (ViewBag.IsAdmin)
+                {
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                        <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="KonfirmasiPembayaran">
+    <div class="col-md-6">
+        <form asp-action="Pengiriman" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="IdOrder" class="control-label"></label>
-                <select asp-for="IdOrder" class ="form-control" asp-items="ViewBag.IdOrder"></select>
+                <label for="Kurir" class="control-label">Kurir</label>
+                <input name="Kurir" class="form-control" />
             </div>
             <div class="form-group">
-                <label asp-for="Kurir" class="control-label"></label>
-                <input asp-for="Kurir" class="form-control" />
-                <span asp-validation-for="Kurir" class="text-danger"></span>
+                <label for="Ongkir" class="control-label">Ongkir</label>
+                <input name="Ongkir" class="form-control" />
             </div>
             <div class="form-group">
-                <label asp-for="Ongkir" class="control-label"></label>
-                <input asp-for="Ongkir" class="form-control" />
-                <span asp-validation-for="Ongkir" class="text-danger"></span>
+                <label for="NoResi" class="control-label">NoResi</label>
+                <input name="NoResi" class="form-control" />
             </div>
             <div class="form-group">
-                <label asp-for="IdAlamat" class="control-label"></label>
-                <select asp-for="IdAlamat" class ="form-control" asp-items="ViewBag.IdAlamat"></select>
+                <label for="Keterangan" class="control-label">Keterangan</label>
+                <input name="Keterangan" class="form-control" />
             </div>
             <div class="form-group">
-                <label asp-for="Status" class="control-label"></label>
-                <input asp-for="Status" class="form-control" />
-                <span asp-validation-for="Status" class="text-danger"></span>
+                <label for="Status" class="control-label">Status</label>
+                <input name="Status" type="number" class="form-control" />
             </div>
             <div class="form-group">
-                <label asp-for="Keterangan" class="control-label"></label>
-                <input asp-for="Keterangan" class="form-control" />
-                <span asp-validation-for="Keterangan" class="text-danger"></span>
+                <input name="IdAlamat" value="@ViewBag.DataOrder.IdAlamat" hidden />
+            </div>
+            <div class="form-group">
+                <input name="IdOrder" class="form-control" value="@ViewBag.DataOrder.Id" hidden></input>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
@@ -47,11 +99,3 @@
         </form>
     </div>
 </div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}

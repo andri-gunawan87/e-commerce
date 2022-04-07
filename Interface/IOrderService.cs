@@ -7,6 +7,8 @@ namespace e_commerce.Interface
     {
         Task<Order> CheckOut(Order newOrder);
         Task<Pembayaran> Dibayar(Pembayaran dataInput);
+        Task<Pengiriman> Dikirim(Pengiriman dataInput);
+        Task Diterima(int idOrder);
         Task<PembayaranViewModel> GetDetailPembayaran(int idOrder);
         Task<OrderViewModel> GetOrder(int idOrder);
         Task<OrderViewModel> KonfirmasiOrder(int idOrder);

@@ -4,6 +4,11 @@ namespace e_commerce.ViewModels
 {
     public class PembayaranViewModel
     {
+        public PembayaranViewModel()
+        {
+
+        }
+
         public int Id { get; set; }
         public string MetodePembayaran { get; set; } = null!;
         public decimal TotalBayar { get; set; }

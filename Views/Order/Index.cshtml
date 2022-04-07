@@ -73,7 +73,14 @@
                     </td>
                 }
                 <td>
-                    @Html.DisplayFor(modelItem => item.Status)
+                    @if (item.IdStatus == 5)
+                        {
+                        <p class="text-success">@Html.DisplayFor(modelItem => item.Status)</p>
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(modelItem => item.Status)
+                    }
                 </td>
                 <td>
                     @if (ViewBag.IsAdmin)
@@ -81,13 +88,13 @@
                         @if (item.IdStatus == 2)
                         {
                             <a asp-action="DetailPembayaran" asp-route-id="@item.Id">
-                                Konfirmasi Order
+                                <p class="text-danger">Konfirmasi Order</p>
                             </a>
                         }
                         else if (item.IdStatus == 3)
                         {
                             <a asp-action="CreatePengiriman" asp-route-id="@item.Id">
-                                Data Pengiriman
+                                <p class="text-primary">Data Pengiriman</p>
                             </a>
                         }
                     }
@@ -95,20 +102,26 @@
                     {
                         @if (item.IdStatus == 4)
                         {
-                            <a asp-action="KonfirmasiDiterima" asp-route-id="@item.Id">
-                                Konfirmasi Diterima
+                            <a asp-action="DataPengiriman" asp-route-id="@item.Id">
+                                <p class="text-success">Konfirmasi Diterima</p>
                             </a>
                         }
                         else if (item.IdStatus == 1)
                         {
                             <a asp-action="PembayaranTransaksi" asp-route-id="@item.Id">
-                                Pembayaran Order
+                                <p class="text-primary">Pembayaran Order</p>
                             </a>
                         }
                         else if (item.IdStatus == 2)
                         {
                             <a asp-action="DetailPembayaran" asp-route-id="@item.Id">
-                                Lihat Pembayaran
+                                <p class="text-secondary">Lihat Pembayaran</p>
+                            </a>
+                        }
+                        else if (item.IdStatus == 5)
+                        {
+                            <a asp-action="BeriUlasan" asp-route-id="@item.Id">
+                                <p class="text-info">Beri Ulasan</p>
                             </a>
                         }
                     }

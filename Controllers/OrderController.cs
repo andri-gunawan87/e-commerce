@@ -259,17 +259,48 @@ namespace e_commerce.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> KonfirmasiPembayaran(int idOrder)
+        public async Task<IActionResult> KonfirmasiPembayaran(int id)
         {
-            ViewBag.dataOrder = await _orderService.KonfirmasiOrder(idOrder);
+            ViewBag.dataOrder = await _orderService.KonfirmasiOrder(id);
             return RedirectToAction("Index", "Order");
         }
         
-        public async Task<IActionResult> CreatePengiriman(int idOrder)
+        public async Task<IActionResult> CreatePengiriman(int id)
         {
-            return View();
+            var result = await _context.DetailOrders.Where(x => x.IdOrder == id).ToListAsync();
+            ViewBag.dataOrder = await _orderService.GetOrder(id);
+            return View(result);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Pengiriman(PengirimanViewModel dataInput)
+        {
+            if(!ModelState.IsValid)
+            {
+                throw new Exception();
+            }
+
+            var dataPengiriman = dataInput.ConvertToDbModel();
+           
+            await _orderService.Dikirim(dataPengiriman);
+
+            return Redirect(nameof(Index));
+        }
+
+        public async Task<IActionResult> DataPengiriman(int id)
+        {
+            ViewBag.DataPengiriman = _context.Pengirimen.FirstOrDefault(x => x.IdOrder == id);
+            var result = await _context.DetailOrders.Where(x => x.IdOrder == id).ToListAsync();
+            return View(result);
+        } 
+        
+        [HttpPost]
+        public async Task<IActionResult> KonfirmasiDiterima(int idOrder)
+        {
+            await _orderService.Diterima(idOrder);
+            return Redirect(nameof(Index));
+        }
 
 
         public int GetId()

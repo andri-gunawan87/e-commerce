@@ -421,6 +421,10 @@ namespace e_commerce.Datas
                     .HasColumnType("int(11)")
                     .HasColumnName("status");
 
+                entity.Property(e => e.NoResi)
+                    .HasMaxLength(100)
+                    .HasColumnName("no_resi");
+
                 entity.HasOne(d => d.IdAlamatNavigation)
                     .WithMany(p => p.Pengirimen)
                     .HasForeignKey(d => d.IdAlamat)
