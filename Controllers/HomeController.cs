@@ -6,6 +6,7 @@ using e_commerce.Datas.Entities;
 using e_commerce.ViewModels;
 using e_commerce.Interface;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace e_commerce.Controllers
 {
@@ -68,7 +69,7 @@ namespace e_commerce.Controllers
                     Stock = x.Stock,
                     Gambar = x.Gambar,
                 });
-                
+
                 //return View(await _dbContext.Produks.ToListAsync());
             }
 
@@ -76,158 +77,191 @@ namespace e_commerce.Controllers
             return View(viewModels);
         }
 
-            // Fungsi Register Akun
-            public IActionResult Register()
-            {
+        public async Task<IActionResult> AllProduct()
+        {
+            var viewModels = new List<ProdukViewModel>();
+            var result = await _produkService.GetAll();
 
-                return View();
+
+            foreach (var x in result)
+            {
+                viewModels.Add(new ProdukViewModel
+                {
+                    Id = x.Id,
+                    Nama = x.Nama,
+                    Deskripsi = x.Deskripsi,
+                    Harga = x.Harga,
+                    Stock = x.Stock,
+                    Gambar = x.Gambar,
+                });
+
             }
 
-            [HttpPost]
-            [ValidateAntiForgeryToken]
-            public async Task<IActionResult> Register(Customer dataLogin)
-            {
-                if (ModelState.IsValid)
-                {
-                    _dbContext.Add(dataLogin);
-                    await _dbContext.SaveChangesAsync();
-                    return RedirectToAction("Users");
-                }
+            return View(viewModels);
+        }
 
+        // Fungsi Register Akun
+        public IActionResult Register()
+        {
+
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(Customer dataLogin)
+        {
+            if (ModelState.IsValid)
+            {
+                _dbContext.Add(dataLogin);
+                await _dbContext.SaveChangesAsync();
+                return RedirectToAction("Users");
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        // Fungsi Add Product
+        public IActionResult AddProduct()
+        {
+
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddProduct(Produk dataProduct)
+        {
+            if (ModelState.IsValid)
+            {
+                _dbContext.Add(dataProduct);
+                await _dbContext.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
+            return View(dataProduct);
+        }
 
-            // Fungsi Add Product
-            public IActionResult AddProduct()
+        // Fungsi Detail Product
+        public async Task<IActionResult> DetailProduct(int? id)
+        {
+            if (id == null)
             {
-
-                return View();
+                return NotFound();
             }
 
-            [HttpPost]
-            [ValidateAntiForgeryToken]
-            public async Task<IActionResult> AddProduct(Produk dataProduct)
+            var dataProuct = await _dbContext.Produks
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (dataProuct == null)
             {
-                if (ModelState.IsValid)
+                return NotFound();
+            }
+
+            return View(dataProuct);
+        }
+
+        // Fungsi Edit Product
+        // GET: ecommerce/Edit/5
+        [Authorize(Roles = AppConstant.ADMIN)]
+        public async Task<IActionResult> EditProduct(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var dataProduct = await _dbContext.Produks.FindAsync(id);
+            if (dataProduct == null)
+            {
+                return NotFound();
+            }
+            return View(dataProduct);
+        }
+
+        // POST: ecommerce/Edit/5
+        [Authorize(Roles = AppConstant.ADMIN)]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditProduct(int id, [Bind("Id,Nama,Deskripsi,Harga,Stock,Gambar")] Produk dataProduct)
+        {
+            if (id != dataProduct.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
                 {
-                    _dbContext.Add(dataProduct);
+                    _dbContext.Update(dataProduct);
                     await _dbContext.SaveChangesAsync();
-                    return RedirectToAction("Index");
                 }
-                return View(dataProduct);
-            }
-
-            // Fungsi Detail Product
-            public async Task<IActionResult> DetailProduct(int? id)
-            {
-                if (id == null)
+                catch (DbUpdateConcurrencyException)
                 {
-                    return NotFound();
-                }
-
-                var dataProuct = await _dbContext.Produks
-                    .FirstOrDefaultAsync(m => m.Id == id);
-                if (dataProuct == null)
-                {
-                    return NotFound();
-                }
-
-                return View(dataProuct);
-            }
-
-            // Fungsi Edit Product
-            // GET: ecommerce/Edit/5
-            public async Task<IActionResult> EditProduct(int? id)
-            {
-                if (id == null)
-                {
-                    return NotFound();
-                }
-
-                var dataProduct = await _dbContext.Produks.FindAsync(id);
-                if (dataProduct == null)
-                {
-                    return NotFound();
-                }
-                return View(dataProduct);
-            }
-
-            // POST: ecommerce/Edit/5
-            [HttpPost]
-            [ValidateAntiForgeryToken]
-            public async Task<IActionResult> EditProduct(int id, [Bind("Id,Nama,Deskripsi,Harga,Stock,Gambar")] Produk dataProduct)
-            {
-                if (id != dataProduct.Id)
-                {
-                    return NotFound();
-                }
-
-                if (ModelState.IsValid)
-                {
-                    try
+                    if (!(_dbContext.Produks.Any(e => e.Id == id)))
                     {
-                        _dbContext.Update(dataProduct);
-                        await _dbContext.SaveChangesAsync();
+                        return NotFound();
                     }
-                    catch (DbUpdateConcurrencyException)
+                    else
                     {
-                        if (!(_dbContext.Produks.Any(e => e.Id == id)))
-                        {
-                            return NotFound();
-                        }
-                        else
-                        {
-                            throw;
-                        }
+                        throw;
                     }
-                    return RedirectToAction(nameof(Index));
                 }
-                return View(dataProduct);
-            }
-
-            // Fungsi Delete
-            // Halaman Konfirmasi Delete
-            public async Task<IActionResult> DeleteProduct(int? id)
-            {
-                if (id == null)
-                {
-                    return NotFound();
-                }
-
-                var dataProduct = await _dbContext.Produks
-                    .FirstOrDefaultAsync(m => m.Id == id);
-                if (dataProduct == null)
-                {
-                    return NotFound();
-                }
-
-                return View(dataProduct);
-            }
-
-            // POST: ecommerce/Delete/5
-            [HttpPost, ActionName("DeleteProduct")]
-            [ValidateAntiForgeryToken]
-            public async Task<IActionResult> DeleteProductConfirmed(int id)
-            {
-
-                var dataProduct = await _dbContext.Produks.FindAsync(id);
-                _dbContext.Produks.Remove(dataProduct);
-                await _dbContext.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-
-            public IActionResult Privacy()
-            {
-                return View();
-            }
-
-            [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-            public IActionResult Error()
-            {
-                return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-            }
-
-
-
+            return View(dataProduct);
         }
+
+        // Fungsi Delete
+        // Halaman Konfirmasi Delete
+        [Authorize(Roles = AppConstant.ADMIN)]
+        public async Task<IActionResult> DeleteProduct(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var dataProduct = await _dbContext.Produks
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (dataProduct == null)
+            {
+                return NotFound();
+            }
+
+            return View(dataProduct);
+        }
+
+        // POST: ecommerce/Delete/5
+        [Authorize(Roles = AppConstant.ADMIN)]
+        [HttpPost, ActionName("DeleteProduct")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteProductConfirmed(int id)
+        {
+
+            var dataProduct = await _dbContext.Produks.FindAsync(id);
+            _dbContext.Produks.Remove(dataProduct);
+            await _dbContext.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> UlasanOrder(int id)
+        {
+            var dataUlasan = await _dbContext.Ulasans.FirstOrDefaultAsync(x => x.IdOrder == id);
+            return View(dataUlasan);
+        }
+
+        public IActionResult Privacy()
+        {
+            return View();
+        }
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+
+
     }
+}

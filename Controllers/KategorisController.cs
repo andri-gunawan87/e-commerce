@@ -10,9 +10,11 @@ using e_commerce.Datas;
 using e_commerce.Datas.Entities;
 using e_commerce.Interface;
 using e_commerce.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace e_commerce.Controllers
 {
+    [Authorize(Roles = AppConstant.ADMIN)]
     public class KategorisController : BaseController
     {
         private readonly IKategoriService _kategoriService;

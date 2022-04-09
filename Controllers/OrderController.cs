@@ -8,6 +8,7 @@ using e_commerce.Datas;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using e_commerce.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace e_commerce.Controllers
 {
@@ -45,12 +46,10 @@ namespace e_commerce.Controllers
                 var result = await _orderService.GetFilteredAdmin(tupplePagination.Item1, tupplePagination.Item2);
                 await SetStatusListAsSelectListItem();
                 ViewBag.FilterDate = null;
-                //var result = await _context.Orders.ToListAsync();
                 return View(result);
             }
             else
             {
-                //var result = await _context.Orders.Where(x => x.IdCustomer == GetId()).ToListAsync();
                 var result = await _orderService.GetAllCustomer(GetId());
                 return View(result);
             }
@@ -166,8 +165,9 @@ namespace e_commerce.Controllers
             //                                            }).ToList()
             //                             }).ToListAsync();
             //return View(dataDetailOrder);
-            ViewBag.DataOrder = _context.Orders.FirstOrDefault(x => x.Id == id);
-            var result = await _context.DetailOrders.Where(x => x.IdOrder == id).ToListAsync();
+            //ViewBag.DataOrder = _context.Orders.FirstOrDefault(x => x.Id == id);
+            //var result = await _context.DetailOrders.Where(x => x.IdOrder == id).ToListAsync();
+            var result = await _orderService.GetDetailOrder(id);
             return View(result);
         }
 
@@ -219,7 +219,6 @@ namespace e_commerce.Controllers
 
                     using (var StreamWriter = System.IO.File.Create(filePathName))
                     {
-                        //await StreamWriter.WriteAsync(Common.StreamToBytes(request.GambarFile.OpenReadStream()));
                         await StreamWriter.WriteAsync(dataInput.FileBukti.OpenReadStream().ToBytes());
                     }
                 }
@@ -257,14 +256,15 @@ namespace e_commerce.Controllers
             return View(dataPembayaran);
 
         }
-
+        [Authorize(Roles = AppConstant.ADMIN)]
         [HttpPost]
         public async Task<IActionResult> KonfirmasiPembayaran(int id)
         {
             ViewBag.dataOrder = await _orderService.KonfirmasiOrder(id);
             return RedirectToAction("Index", "Order");
         }
-        
+
+        [Authorize(Roles = AppConstant.ADMIN)]
         public async Task<IActionResult> CreatePengiriman(int id)
         {
             var result = await _context.DetailOrders.Where(x => x.IdOrder == id).ToListAsync();
@@ -272,6 +272,7 @@ namespace e_commerce.Controllers
             return View(result);
         }
 
+        [Authorize(Roles = AppConstant.ADMIN)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Pengiriman(PengirimanViewModel dataInput)
@@ -302,6 +303,54 @@ namespace e_commerce.Controllers
             return Redirect(nameof(Index));
         }
 
+        public async Task<IActionResult> BeriUlasan(int id)
+        {
+            ViewBag.DataOrder = _context.Orders.FirstOrDefault(x => x.Id == id);
+            var result = await _context.DetailOrders.Where(x => x.IdOrder == id).ToListAsync();
+            return View(result);
+        }
+        
+        [HttpPost]
+        public async Task<IActionResult> SimpanUlasan(UlasanViewModel dataUlasan)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(dataUlasan);
+            }
+            try
+            {
+                string fileName = string.Empty;
+
+                if (dataUlasan.FileUlasan != null)
+                {
+                    fileName = $"{Guid.NewGuid()}-{dataUlasan.FileUlasan?.FileName}";
+                    string filePathName = _iwebHost.WebRootPath + $"/ReviewImage/{fileName}";
+
+                    using (var StreamWriter = System.IO.File.Create(filePathName))
+                    {
+                        //await StreamWriter.WriteAsync(Common.StreamToBytes(request.GambarFile.OpenReadStream()));
+                        await StreamWriter.WriteAsync(dataUlasan.FileUlasan.OpenReadStream().ToBytes());
+                    }
+                }
+
+                var dataBayar = dataUlasan.ConvertToDbModel();
+                dataBayar.Gambar = $"ReviewImage/{fileName}";
+               
+                await _orderService.Diulas(dataBayar);
+
+                return Redirect(nameof(Index));
+            }
+            catch (InvalidOperationException ex)
+            {
+                ViewBag.ErrorMessage = ex.Message;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return View(dataUlasan);
+        }
 
         public int GetId()
         {

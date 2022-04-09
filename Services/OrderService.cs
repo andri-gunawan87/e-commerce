@@ -33,6 +33,26 @@ namespace e_commerce.Services
             return dataViewModel;
         }
 
+        public async Task<List<OrderDetailViewModel>> GetDetailOrder(int idOrder)
+        {
+            var result = await (from a in DbContext.Orders
+                                join b in DbContext.DetailOrders on a.Id equals b.IdOrder
+                                join c in DbContext.Produks on b.IdProduk equals c.Id
+                                where a.Id == idOrder
+                                select new OrderDetailViewModel
+                                {
+                                    Id = b.Id,
+                                    Produk = c.Nama,
+                                    Harga = c.Harga,
+                                    JumlahBarang = b.JumlahBarang,
+                                    SubTotal = b.SubTotal,
+                                    Gambar = c.Gambar
+                                   
+                                }).ToListAsync();
+
+            return result;
+        }
+
 
         public async Task<List<OrderViewModel>> GetAllCustomer(int idCustomer)
         {
@@ -65,23 +85,35 @@ namespace e_commerce.Services
 
         public async Task<List<OrderViewModel>> GetFilteredAdmin(int limit, int offset, int? status = null, DateTime? date = null)
         {
-            return await (from a in DbContext.Orders
-                          join b in DbContext.StatusOrders on a.IdStatus equals b.Id
-                          join alamat in DbContext.Alamats on a.IdAlamat equals alamat.Id
-                          join c in DbContext.Customers on a.IdCustomer equals c.Id
-                          where status == null ? 1 == 1 : status.Value == a.IdStatus
-                          && date == null ? 1 == 1 : date.Value.Date == a.TanggalTransaksi.Date
-                          select new OrderViewModel
-                          {
-                              Id = a.Id,
-                              Status = b.Nama,
-                              TanggalTransaksi = a.TanggalTransaksi,
-                              Total = (decimal)a.JumlahBayar,
-                              Catatan = a.Catatan,
-                              NamaCustomer = c.Nama,
-                              IdStatus = a.IdStatus,
-                          }).Skip(offset)
-                                    .Take(limit).ToListAsync();
+            var selectCondition = (from a in DbContext.Orders
+                                   join b in DbContext.StatusOrders on a.IdStatus equals b.Id
+                                   join alamat in DbContext.Alamats on a.IdAlamat equals alamat.Id
+                                   join c in DbContext.Customers on a.IdCustomer equals c.Id
+                                   select new OrderViewModel
+                                   {
+                                       Id = a.Id,
+                                       Status = b.Nama,
+                                       TanggalTransaksi = a.TanggalTransaksi,
+                                       NamaCustomer = c.Nama,
+                                       Total = a.JumlahBayar.Value,
+                                       IdStatus = a.IdStatus,
+                                       Catatan = a.Catatan,
+                                   }).AsQueryable();
+
+            if (status != null)
+            {
+                selectCondition = selectCondition.Where(x => x.IdStatus == status.Value);
+            }
+
+            if (date != null)
+            {
+                selectCondition = selectCondition.Where(x => x.TanggalTransaksi.Date == date.Value.Date);
+            }
+
+            return await selectCondition
+            .Skip(offset)
+            .Take(limit)
+            .ToListAsync();
         }
 
         public async Task<OrderViewModel> GetOrder(int idOrder)
@@ -120,6 +152,19 @@ namespace e_commerce.Services
             dataOrder.IdStatus = 5;
             DbContext.Update(dataOrder);
             DbContext.SaveChanges();
+        }
+
+        public async Task<Ulasan> Diulas(Ulasan dataInput)
+        {
+            await DbContext.AddAsync(dataInput);
+            await DbContext.SaveChangesAsync();
+
+            var dataOrder = await DbContext.Orders.FirstOrDefaultAsync(x => x.Id == dataInput.IdOrder);
+            dataOrder.IdStatus = 6;
+            DbContext.Update(dataOrder);
+            DbContext.SaveChanges();
+
+            return dataInput;
         }
     }
 }

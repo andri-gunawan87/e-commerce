@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using e_commerce.Datas;
 using e_commerce.Datas.Entities;
+using Microsoft.AspNetCore.Authorization;
 
 namespace e_commerce.Controllers
 {
@@ -21,6 +22,7 @@ namespace e_commerce.Controllers
         }
 
         // GET: Customers
+        [Authorize(Roles = AppConstant.ADMIN)]
         public async Task<IActionResult> Index()
         {
             var ecommerceContext = _context.Customers.Include(c => c.IdAlamatNavigation);
@@ -49,6 +51,7 @@ namespace e_commerce.Controllers
         }
 
         // GET: Customers/Create
+        [Authorize(Roles = AppConstant.ADMIN)]
         public IActionResult Create()
         {
             ViewData["IdAlamat"] = new SelectList(_context.Alamats, "Id", "Id");
@@ -94,7 +97,7 @@ namespace e_commerce.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Nama,NoHp,Username,Password,ProfilPicture,Email,IsAdmin,IdAlamat")] Customer customer)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Nama,NoHp,ProfilPicture,IdAlamat")] Customer customer)
         {
             if (id != customer.Id)
             {
@@ -126,6 +129,7 @@ namespace e_commerce.Controllers
         }
 
         // GET: Customers/Delete/5
+        [Authorize(Roles = AppConstant.ADMIN)]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -145,6 +149,7 @@ namespace e_commerce.Controllers
         }
 
         // POST: Customers/Delete/5
+        [Authorize(Roles = AppConstant.ADMIN)]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

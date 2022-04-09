@@ -11,6 +11,7 @@ namespace e_commerce.Datas.Entities
             Keranjangs = new HashSet<Keranjang>();
             Orders = new HashSet<Order>();
             Pembayarans = new HashSet<Pembayaran>();
+            Ulasans = new HashSet<Ulasan>();
         }
 
         public int Id { get; set; }
@@ -31,5 +32,6 @@ namespace e_commerce.Datas.Entities
         public virtual ICollection<Keranjang> Keranjangs { get; set; }
         public virtual ICollection<Order> Orders { get; set; }
         public virtual ICollection<Pembayaran> Pembayarans { get; set; }
+        public virtual ICollection<Ulasan> Ulasans { get; set; }
     }
 }

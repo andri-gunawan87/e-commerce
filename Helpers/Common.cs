@@ -1,4 +1,6 @@
-﻿namespace e_commerce.Helpers;
+﻿using System.Globalization;
+
+namespace e_commerce.Helpers;
     public static class Common
 {
     public static byte[] StreamToBytes(Stream streamContent)
@@ -49,5 +51,10 @@
         }
 
         return new Tuple<int, int>(limit, offset);
+    }
+
+    public static string ToIDR(this decimal val)
+    {
+        return val.ToString("C", new CultureInfo("id-ID"));
     }
 }

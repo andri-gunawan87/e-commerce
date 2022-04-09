@@ -2104,7 +2104,7 @@ ol {
 
 .shop__cart__table tbody tr .cart__product__item {
 	overflow: hidden;
-	width: 585px;
+	/* width: 585p	; */
 }
 
 .shop__cart__table tbody tr .cart__product__item img {
@@ -2132,11 +2132,11 @@ ol {
 	font-size: 16px;
 	color: #ca1515;
 	font-weight: 600;
-	width: 190px;
+	width: 80px;
 }
 
 .shop__cart__table tbody tr .cart__quantity {
-	width: 190px;
+	width: 120px;
 }
 
 .shop__cart__table tbody tr .cart__quantity .pro-qty {

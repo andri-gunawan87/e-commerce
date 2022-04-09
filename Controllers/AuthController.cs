@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using e_commerce.Interface;
 using e_commerce.Datas.Entities;
+using Microsoft.AspNetCore.Authorization;
 
 namespace e_commerce.Controllers
 {
@@ -19,21 +20,10 @@ namespace e_commerce.Controllers
             _authService = authService;
         }
 
+        [Authorize(Roles = AppConstant.ADMIN)]
         public async Task<IActionResult> Index()
         {
             var dbResult = await _authService.GetAll();
-
-
-            //for (int i = 0; i < dbResult.Count; i++)
-            //{
-            //    viewModels.Add(new KategoriViewModel
-            //    {
-            //        Id = dbResult[i].Id,
-            //        Nama = dbResult[i].Nama,
-            //        Deskripsi = dbResult[i].Deskripsi,
-            //        Icon = dbResult[i].Icon,
-            //    });
-            //}
             return View(dbResult);
         }
 
@@ -133,6 +123,7 @@ namespace e_commerce.Controllers
             return View(dataLogin);
         }
 
+        [Authorize(Roles = AppConstant.ADMIN)]
         public async Task<IActionResult> Edit(int id)
         {
             var datainput = await _authService.Get(id);
@@ -148,6 +139,7 @@ namespace e_commerce.Controllers
         // POST: Kategoris/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = AppConstant.ADMIN)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int? id, AccountRegisterViewModel dataInput)
@@ -171,6 +163,8 @@ namespace e_commerce.Controllers
             }
             return View(dataInput);
         }
+
+        [Authorize(Roles = AppConstant.ADMIN)]
         // Fungsi Delete
         public async Task<IActionResult> Delete(int id)
         {
@@ -178,6 +172,7 @@ namespace e_commerce.Controllers
             return View(dataUser);
         }
 
+        [Authorize(Roles = AppConstant.ADMIN)]
         // POST: Kategoris/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]

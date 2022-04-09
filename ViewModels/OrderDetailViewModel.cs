@@ -7,5 +7,6 @@
         public decimal Harga { get; set; }
         public int JumlahBarang { get; set; }
         public decimal SubTotal { get; set; }
+        public string? Gambar { get; set; }
     }
 }

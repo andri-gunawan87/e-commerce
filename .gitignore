@@ -1,4 +1,6 @@
 ﻿/bin
 /obj
 /.vs
+/wwwroot/BuktiTransfer
+/wwwroot/ReviewImage
 *.user

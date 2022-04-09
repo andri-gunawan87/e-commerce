@@ -45,33 +45,6 @@ namespace e_commerce.Controllers
             //return View(await _context.Keranjangs.ToListAsync());
         }
 
-        //// GET: Keranjangs/Details/5
-        //public async Task<IActionResult> Details(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    var keranjangViewModel = await _context.KeranjangViewModel
-        //        .FirstOrDefaultAsync(m => m.Id == id);
-        //    if (keranjangViewModel == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return View(keranjangViewModel);
-        //}
-
-        // GET: Keranjangs/Create
-        //public IActionResult Create()
-        //{
-        //    return View();
-        //}
-
-        // POST: Keranjangs/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(int JumlahBarang, int IdProduk)
@@ -81,17 +54,9 @@ namespace e_commerce.Controllers
                 return BadRequest();
             }
 
-            // Cek fungsi ini selalu menghasilkan nilai null atau 0
-            // var IdCustomer = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var userEmail = User.FindFirstValue(ClaimTypes.Name).ToString(); ;
             var userData = _context.Customers.FirstOrDefault(x => x.Email == userEmail);
             int userId = userData.Id;
-
-
-            //var data = new KeranjangViewModel();
-            //data.JumlahBarang = 1;
-            //data.IdProduk = id;
-            //data.IdCustomer = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value.ToInt();
 
             await _keranjangService.Add(new KeranjangViewModel
             {

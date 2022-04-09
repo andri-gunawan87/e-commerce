@@ -40,29 +40,59 @@ namespace e_commerce.Controllers
         [Authorize]
         public async Task<IActionResult> Index()
         {
-            var dbResult = await _produkService.GetAll();
-            var viewModel = new List<ProdukViewModel>();
-
-            for (int i = 0; i < dbResult.Count; i++)
+            if (User.IsInRole(AppConstant.ADMIN))
             {
-                viewModel.Add(new ProdukViewModel
+                var dbResult = await _produkService.GetAll();
+                var viewModel = new List<ProdukViewModel>();
+
+                for (int i = 0; i < dbResult.Count; i++)
                 {
-                    Id = dbResult[i].Id,
-                    Harga = dbResult[i].Harga,
-                    Nama = dbResult[i].Nama,
-                    Deskripsi = dbResult[i].Deskripsi,
-                    Stock = dbResult[i].Stock,
-                    Gambar = dbResult[i].Gambar,
-                    Kategories = dbResult[i].KategoriProduks.Select(x => new KategoriViewModel
+                    viewModel.Add(new ProdukViewModel
                     {
-                        Id = x.IdKategori,
-                        Nama = x.IdKategoriNavigation.Nama,
-                        Icon = x.IdKategoriNavigation.Icon
-                    }).ToList()
+                        Id = dbResult[i].Id,
+                        Harga = dbResult[i].Harga,
+                        Nama = dbResult[i].Nama,
+                        Deskripsi = dbResult[i].Deskripsi,
+                        Stock = dbResult[i].Stock,
+                        Gambar = dbResult[i].Gambar,
+                        Kategories = dbResult[i].KategoriProduks.Select(x => new KategoriViewModel
+                        {
+                            Id = x.IdKategori,
+                            Nama = x.IdKategoriNavigation.Nama,
+                            Icon = x.IdKategoriNavigation.Icon
+                        }).ToList()
+                    });
+                }
+
+                return View(viewModel);
+            }
+            else
+            {
+                return RedirectToAction("AllProduct", "Home");
+            }
+        }
+
+        public async Task<IActionResult> AllProduct()
+        {
+            var viewModels = new List<ProdukViewModel>();
+            var result = await _produkService.GetAll();
+
+
+            foreach (var x in result)
+            {
+                viewModels.Add(new ProdukViewModel
+                {
+                    Id = x.Id,
+                    Nama = x.Nama,
+                    Deskripsi = x.Deskripsi,
+                    Harga = x.Harga,
+                    Stock = x.Stock,
+                    Gambar = x.Gambar,
                 });
+
             }
 
-            return View(viewModel);
+            return View(viewModels);
         }
 
         // GET: Produks/Details/5
@@ -121,6 +151,7 @@ namespace e_commerce.Controllers
         }
 
         // POST: Produks/Create
+        [Authorize(Roles = AppConstant.ADMIN)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ProdukViewModel dataInput)
@@ -175,6 +206,7 @@ namespace e_commerce.Controllers
         }
 
         // GET: Produks/Edit/5
+        [Authorize(Roles = AppConstant.ADMIN)]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -202,6 +234,7 @@ namespace e_commerce.Controllers
         // POST: Produks/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = AppConstant.ADMIN)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(ProdukViewModel dataInput)
@@ -278,6 +311,7 @@ namespace e_commerce.Controllers
         }
 
         // GET: Produks/Delete/5
+        [Authorize(Roles = AppConstant.ADMIN)]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -296,6 +330,7 @@ namespace e_commerce.Controllers
         }
 
         // POST: Produks/Delete/5
+        [Authorize(Roles = AppConstant.ADMIN)]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

@@ -1,4 +1,4 @@
-﻿@using System.Globalization
+﻿@using e_commerce.Helpers;
 @model IEnumerable<e_commerce.ViewModels.KeranjangViewModel>
 
 @{
@@ -101,7 +101,7 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="cart__price">@(item.SubTotal / item.JumlahBarang)</td>
+                                    <td class="cart__price">Rp. @(item.SubTotal / item.JumlahBarang)</td>
 
                                     <form asp-action="EditJumlah" asp-controller="Keranjangs" method="post">
                                         @Html.AntiForgeryToken()
@@ -111,7 +111,7 @@
                                         </div>
                                     </td>
                                     <input name="IdProduk" value="@item.Id" type="hidden" />
-                                    <td class="cart__total">@item.SubTotal.ToString("C", new CultureInfo("id-ID"))</td>
+                                    <td class="cart__total">@item.SubTotal.ToIDR()</td>
 
                                     <td class="cart__close">
                                         <a asp-action="Delete" asp-route-id="@item.Id">
@@ -119,7 +119,7 @@
                                         </a>
                                     </td>
                                     <td>
-                                        <input type="submit" value="Update" />
+                                        <button type="submit" class="site-btn">Update</button>
                                     </td>
                                     </form>
 
@@ -148,51 +148,29 @@
                             <select name="IdAlamat" class="form-control" asp-items="ViewBag.IdAlamat"></select>
                         </div>
                         <div class="form-group">
-                            <input type="submit" value="Checkout" class="primary-btn" />
+                            <button type="submit" value="Checkout" class="site-btn">Checkout</button>
                         </div>
                     </form>
                 </div>
 
             </div>
         </div>
+        <br />
         <div class="row">
-            <div class="col-lg-6 col-md-6 col-sm-6">
+            <div class="col-lg-8 col-md-8 col-sm-8">
 
                 <div class="cart__btn">
                     <a href="#">Continue Shopping</a>
                 </div>
 
             </div>
-            <div class="col-lg-6 col-md-6 col-sm-6">
-                <form asp-controller="Order" asp-action="Checkout">
-                    <div class="form-group">
-                        <select name="IdAlamat" class="form-control" asp-items="ViewBag.IdAlamat"></select>
-                    </div>
-
-                    <div class="cart__btn update__btn">
-                        <span><button type="submit">Submit</button>Checkout</span>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-6">
+            <div class="col-lg-4">
                 <div class="discount__content">
                     <h6>Discount codes</h6>
                     <form action="#">
                         <input type="text" placeholder="Enter your coupon code">
                         <button type="submit" class="site-btn">Apply</button>
                     </form>
-                </div>
-            </div>
-            <div class="col-lg-4 offset-lg-2">
-                <div class="cart__total__procced">
-                    <h6>Cart total</h6>
-                    <ul>
-                        <li>Subtotal <span>$ 750.0</span></li>
-                        <li>Total <span>$ 750.0</span></li>
-                    </ul>
-                    <a href="#" class="primary-btn">Proceed to checkout</a>
                 </div>
             </div>
         </div>
